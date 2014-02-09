@@ -27,6 +27,8 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		startService(new Intent(this, BackgroundService.class));
+		
 		mReceiver = new ActivityReceiver(new Handler());
 		
 		activityRecognitionClient = new ActivityRecognitionClient(this, this, this);
@@ -45,9 +47,9 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 	public void onConnected(Bundle connectionHint) {
 		Log.i(TAG, "Connection succeeded");
 		
-	    Intent intent = new Intent(this, BackgroundService.class);
+	    Intent intent = new Intent("fi.aalto.tripchain.activity.recognition");
 	    //intent.putExtra("receiverTag", mReceiver);
-	    PendingIntent callbackIntent = PendingIntent.getService(this, 0, intent,            
+	    PendingIntent callbackIntent = PendingIntent.getBroadcast(this, 0, intent,            
 	    		PendingIntent.FLAG_UPDATE_CURRENT);
 	    activityRecognitionClient.requestActivityUpdates(30000, callbackIntent);
 	    activityRecognitionClient.disconnect();
