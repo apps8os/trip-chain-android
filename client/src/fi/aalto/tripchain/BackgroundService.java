@@ -1,19 +1,8 @@
 package fi.aalto.tripchain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.android.gms.location.ActivityRecognitionResult;
-import com.google.android.gms.location.DetectedActivity;
-
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Bundle;
+
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,9 +11,16 @@ public class BackgroundService extends Service  {
 	
 	private ActivityReceiver activityReceiver;
 	private LocationListener locationListener;
+	private Route route;
+	
+	
+	public synchronized Route getRoute() {
+		return this.route;
+	}
 
 	@Override
 	public void onCreate() {
+		this.route = new Route();
 		this.activityReceiver = new ActivityReceiver(this);
 		this.locationListener = new LocationListener(this);
 	}

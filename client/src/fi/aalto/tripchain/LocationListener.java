@@ -40,6 +40,8 @@ class LocationListener implements android.location.LocationListener {
 				" Accuracy: " + location.getAccuracy() +
 				" Latitude: " + location.getLatitude() + 
 				" Longitude: " + location.getLongitude());
+		
+		this.service.getRoute().onLocation(location);
 	}
 
 	@Override
