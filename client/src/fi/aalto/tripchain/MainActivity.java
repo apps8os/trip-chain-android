@@ -5,6 +5,7 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.internal.ac;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
+import com.google.android.gms.location.LocationClient;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +20,6 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 	
 	private final static String TAG = MainActivity.class.getSimpleName();
 	private ActivityRecognitionClient activityRecognitionClient;
-	
-	public ActivityReceiver mReceiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +27,6 @@ GooglePlayServicesClient.OnConnectionFailedListener {
 		setContentView(R.layout.activity_main);
 		
 		startService(new Intent(this, BackgroundService.class));
-		
-		mReceiver = new ActivityReceiver(new Handler());
 		
 		activityRecognitionClient = new ActivityRecognitionClient(this, this, this);
 		activityRecognitionClient.connect();
