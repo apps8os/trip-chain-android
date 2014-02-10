@@ -2,7 +2,10 @@ package fi.aalto.tripchain;
 
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -13,13 +16,43 @@ public class MainActivity extends Activity  {
 	
 	private Intent serviceIntent;
 	private ServiceConnectionApi serviceConnectionApi;
+	
+	private Button startButton;
+	
+	private boolean recording = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		startService();
+	}
+	
+	private void initUi() {
 		setContentView(R.layout.activity_main);
 		
-		startService();
+		this.startButton = (Button) findViewById(R.id.button);
+		this.startButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				if (!recording) {
+					try {
+						serviceConnectionApi.start();
+						recording = true;
+					} catch (RemoteException e) {
+					}
+				} else {
+					try {
+						serviceConnectionApi.stop();
+						recording = false;
+					} catch (RemoteException e) {
+					}					
+				}
+				
+				initUi();
+			}
+		});
+		
+		this.startButton.setText(!recording ? "Start recording" : "Stop recording");
 	}
 	
 	private void startService() {
@@ -28,11 +61,12 @@ public class MainActivity extends Activity  {
     	bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
 	}
 	
-	private void stopService() {
-		try {
-			serviceConnectionApi.stop();
-		} catch (Exception e) {
-			Log.d(TAG, "stopping service failed", e);
+
+	public void onStop() {
+		super.onStop();
+		
+		if (!recording) {
+			stopService(serviceIntent);
 		}
 		
 		try {
@@ -42,12 +76,19 @@ public class MainActivity extends Activity  {
 		}
 	}
 	
+	
 	private ServiceConnection serviceConnection = new ServiceConnection() {		
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.i(TAG, "Service connection created " +name);			
 			serviceConnectionApi = ServiceConnectionApi.Stub.asInterface(service);
-
+			
+			try {
+				recording = serviceConnectionApi.recording();
+			} catch (RemoteException e) {
+			}
+			
+			initUi();
 		}
 		
 		@Override
@@ -55,15 +96,4 @@ public class MainActivity extends Activity  {
 			Log.i(TAG, "Service connection closed " +name);			
 		}	
 	};
-	
-	
-	@Override
-	protected void onStop() {
-		super.onStop();
-		
-		Log.d(TAG, "onStop");
-		
-		stopService();
-	}
-
 }

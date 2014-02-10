@@ -1,11 +1,13 @@
 package fi.aalto.tripchain;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 public class BackgroundService extends Service  {
@@ -17,6 +19,8 @@ public class BackgroundService extends Service  {
 	
 	private Handler handler;
 	
+	private volatile boolean recording = false;
+	
 	
 	public synchronized Route getRoute() {
 		return this.route;
@@ -27,19 +31,33 @@ public class BackgroundService extends Service  {
 		Log.d(TAG, "onCreate");
 		
 		this.handler = new Handler();
-		this.route = new Route();
-		this.activityReceiver = new ActivityReceiver(this);
-		this.locationListener = new LocationListener(this);
 	}
 	
 	public void stop() {
 		Log.d(TAG, "Stopping!");
 		this.activityReceiver.stop();
 		this.locationListener.stop();
+		this.recording = false;
 		
 		// TODO XXX Post json
 		
-		stopSelf();
+		stopForeground(true);
+	}
+	
+	public void start() {
+		Log.d(TAG, "Starting!");
+		NotificationCompat.Builder mBuilder =
+			    new NotificationCompat.Builder(this)
+			    .setSmallIcon(R.drawable.ic_launcher)
+			    .setContentTitle("Tripchain")
+			    .setContentText("Recording route");
+		
+		startForeground(12345, mBuilder.build());
+		
+		this.recording = true;
+		this.route = new Route();
+		this.activityReceiver = new ActivityReceiver(this);
+		this.locationListener = new LocationListener(this);		
 	}
 	
 	@Override
@@ -65,6 +83,21 @@ public class BackgroundService extends Service  {
 				}
 			});
 
+		}
+
+		@Override
+		public void start() throws RemoteException {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					BackgroundService.this.start();
+				}
+			});
+		}
+
+		@Override
+		public boolean recording() throws RemoteException {
+			return BackgroundService.this.recording;
 		}
 	};
 
