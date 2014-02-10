@@ -1,43 +1,69 @@
 package fi.aalto.tripchain;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.internal.ac;
-import com.google.android.gms.location.ActivityRecognitionClient;
-import com.google.android.gms.location.ActivityRecognitionResult;
-import com.google.android.gms.location.LocationClient;
-
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
+import android.os.IBinder;
 import android.util.Log;
 import android.app.Activity;
-import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 
 public class MainActivity extends Activity  {	
 	private final static String TAG = MainActivity.class.getSimpleName();
 	
 	private Intent serviceIntent;
-
+	private ServiceConnectionApi serviceConnectionApi;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		serviceIntent = new Intent(this, BackgroundService.class);		
-		startService(serviceIntent);
+		startService();
 	}
+	
+	private void startService() {
+		serviceIntent = new Intent(this, BackgroundService.class);	
+		startService(serviceIntent);
+    	bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
+	}
+	
+	private void stopService() {
+		try {
+			serviceConnectionApi.stop();
+		} catch (Exception e) {
+			Log.d(TAG, "stopping service failed", e);
+		}
+		
+		try {
+			unbindService(serviceConnection);
+		} catch (Exception e) {
+			Log.d(TAG, "Failed to unbind service", e);
+		}
+	}
+	
+	private ServiceConnection serviceConnection = new ServiceConnection() {		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			Log.i(TAG, "Service connection created " +name);			
+			serviceConnectionApi = ServiceConnectionApi.Stub.asInterface(service);
+
+		}
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			Log.i(TAG, "Service connection closed " +name);			
+		}	
+	};
 	
 	
 	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+	protected void onStop() {
+		super.onStop();
 		
-		Log.d(TAG, "onDestroy");
+		Log.d(TAG, "onStop");
 		
-		stopService(serviceIntent);
+		stopService();
 	}
 
 }
