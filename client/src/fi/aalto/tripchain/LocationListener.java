@@ -56,4 +56,8 @@ class LocationListener implements android.location.LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 	}
 	
+	public void stop() {
+		locationManager.removeUpdates(this);
+	}
+	
 }

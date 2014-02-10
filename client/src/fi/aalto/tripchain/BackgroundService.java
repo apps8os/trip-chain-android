@@ -20,9 +20,17 @@ public class BackgroundService extends Service  {
 
 	@Override
 	public void onCreate() {
+		Log.d(TAG, "onCreate");
+		
 		this.route = new Route();
 		this.activityReceiver = new ActivityReceiver(this);
 		this.locationListener = new LocationListener(this);
+	}
+	
+	@Override
+	public void onDestroy() {
+		this.activityReceiver.stop();
+		this.locationListener.stop();
 	}
 
 	@Override

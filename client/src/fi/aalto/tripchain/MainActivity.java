@@ -15,47 +15,29 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 
-public class MainActivity extends Activity implements GooglePlayServicesClient.ConnectionCallbacks, 
-GooglePlayServicesClient.OnConnectionFailedListener {
-	
+public class MainActivity extends Activity  {	
 	private final static String TAG = MainActivity.class.getSimpleName();
-	private ActivityRecognitionClient activityRecognitionClient;
+	
+	private Intent serviceIntent;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		startService(new Intent(this, BackgroundService.class));
-		
-		activityRecognitionClient = new ActivityRecognitionClient(this, this, this);
-		activityRecognitionClient.connect();
-		
+		serviceIntent = new Intent(this, BackgroundService.class);		
+		startService(serviceIntent);
 	}
-
-
+	
+	
 	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		Log.i(TAG, "Connection failed");
+	protected void onDestroy() {
+		super.onDestroy();
 		
-	}
-
-	@Override
-	public void onConnected(Bundle connectionHint) {
-		Log.i(TAG, "Connection succeeded");
+		Log.d(TAG, "onDestroy");
 		
-	    Intent intent = new Intent("fi.aalto.tripchain.activity.recognition");
-	    //intent.putExtra("receiverTag", mReceiver);
-	    PendingIntent callbackIntent = PendingIntent.getBroadcast(this, 0, intent,            
-	    		PendingIntent.FLAG_UPDATE_CURRENT);
-	    activityRecognitionClient.requestActivityUpdates(30000, callbackIntent);
-	    activityRecognitionClient.disconnect();
-	    Log.i(TAG, "Requested and disconnected.");
-	}
-
-	@Override
-	public void onDisconnected() {
-		Log.i(TAG, "Disconnected");
+		stopService(serviceIntent);
 	}
 
 }
