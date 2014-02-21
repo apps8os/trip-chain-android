@@ -86,7 +86,7 @@ public class Route {
 			features.put(rs.toJson());
 		}
 		
-		featureCollection.put("type", "featureCollection");
+		featureCollection.put("type", "FeatureCollection");
 		featureCollection.put("features", features);
 		
 		return featureCollection;

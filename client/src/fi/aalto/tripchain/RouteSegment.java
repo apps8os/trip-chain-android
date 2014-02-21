@@ -18,7 +18,7 @@ public class RouteSegment {
 	
 	public RouteSegment(Activity activity) {
 		this.activity = activity;
-		locations = new ArrayList<Location>();
+		this.locations = new ArrayList<Location>();
 	}
 	
 	public void addLocation(Location location) {
@@ -50,6 +50,10 @@ public class RouteSegment {
 			}
 		 */
 		
+		if (locations.size() == 0) {
+			return null;
+		}
+		
 		JSONObject feature = new JSONObject();
 		JSONObject geometry = new JSONObject();
 		JSONArray coordinates = new JSONArray();
@@ -61,14 +65,18 @@ public class RouteSegment {
 		}
 		
 		geometry.put("coordinates", coordinates);
-		geometry.put("type", "LineString");
+		if (coordinates.length() > 1) {
+			geometry.put("type", "LineString");
+		} else {
+			geometry.put("type", "Point");
+		}
 		
 		JSONObject properties = new JSONObject();
 		properties.put("activity", activity.toString());
 		
 		feature.put("geometry", geometry);
 		feature.put("properties", properties);
-		feature.put("type", "feature");
+		feature.put("type", "Feature");
 		
 		return feature;
 	}
