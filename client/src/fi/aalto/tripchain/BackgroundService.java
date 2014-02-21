@@ -1,5 +1,9 @@
 package fi.aalto.tripchain;
 
+import java.util.Date;
+
+import org.json.JSONException;
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -39,8 +43,25 @@ public class BackgroundService extends Service  {
 		this.locationListener.stop();
 		this.recording = false;
 		
-		// TODO XXX Post json
-		
+		try {
+			Intent email = new Intent(Intent.ACTION_SEND);
+			email.putExtra(Intent.EXTRA_EMAIL,
+					new String[] { "jukkapekka.virtanen@gmail.com" });
+			email.putExtra(Intent.EXTRA_SUBJECT,
+					"Tripchain route " + new Date().toGMTString());
+			email.putExtra(Intent.EXTRA_TEXT, route.toJson().toString(2));
+			email.setType("message/rfc822");
+			
+			
+			
+			Intent chooser = Intent.createChooser(email, "Choose an Email client :");
+			chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+			startActivity(chooser);
+		} catch (JSONException e) {
+			Log.d(TAG, "Could not serialize route", e);
+		}
+
 		stopForeground(true);
 	}
 	
