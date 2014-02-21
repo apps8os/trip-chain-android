@@ -11,7 +11,7 @@ class LocationListener implements android.location.LocationListener {
 	private BackgroundService service;
 	private LocationManager locationManager;
 	
-	private final static int MINUMUM_POSITION_THRESHOLD = 50; // meters
+	private final static int MINUMUM_POSITION_THRESHOLD = 10; // meters
 	private final static int MINIMUM_POSITION_INTERVAL = 5000; // milliseconds	
 	
 	public LocationListener(BackgroundService service) {
