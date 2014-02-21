@@ -3,6 +3,10 @@ package fi.aalto.tripchain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.location.Location;
 
 public class Route {
@@ -36,5 +40,55 @@ public class Route {
 	    
     	RouteSegment lastSegment = route.get(route.size() - 1);
     	lastSegment.addLocation(location);
+	}
+	
+	public JSONObject toJson() throws JSONException {
+		/*
+		  { "type": "FeatureCollection",
+		    "features": [
+		      { "type": "Feature",
+		        "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+		        "properties": {"prop0": "value0"}
+		        },
+		      { "type": "Feature",
+		        "geometry": {
+		          "type": "LineString",
+		          "coordinates": [
+		            [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
+		            ]
+		          },
+		        "properties": {
+		          "prop0": "value0",
+		          "prop1": 0.0
+		          }
+		        },
+		      { "type": "Feature",
+		         "geometry": {
+		           "type": "Polygon",
+		           "coordinates": [
+		             [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+		               [100.0, 1.0], [100.0, 0.0] ]
+		             ]
+		         },
+		         "properties": {
+		           "prop0": "value0",
+		           "prop1": {"this": "that"}
+		           }
+		         }
+		       ]
+		     }		
+		 */
+		
+		JSONObject featureCollection = new JSONObject();
+		JSONArray features = new JSONArray();
+		
+		for (RouteSegment rs : route) {
+			features.put(rs.toJson());
+		}
+		
+		featureCollection.put("type", "featureCollection");
+		featureCollection.put("features", features);
+		
+		return featureCollection;
 	}
 }
