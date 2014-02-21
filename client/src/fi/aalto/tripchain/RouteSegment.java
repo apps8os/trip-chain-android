@@ -56,20 +56,26 @@ public class RouteSegment {
 		
 		JSONObject feature = new JSONObject();
 		JSONObject geometry = new JSONObject();
+		
 		JSONArray coordinates = new JSONArray();
-		for (Location l : locations) {
-			JSONArray tuple = new JSONArray();
-			tuple.put(l.getLongitude());
-			tuple.put(l.getLatitude());
-			coordinates.put(tuple);
+		if (locations.size() > 1) {
+			geometry.put("type", "LineString");
+			
+			for (Location l : locations) {
+				JSONArray tuple = new JSONArray();
+				tuple.put(l.getLongitude());
+				tuple.put(l.getLatitude());
+				coordinates.put(tuple);
+			}
+
+		} else {
+			geometry.put("type", "Point");			
+			
+			coordinates.put(locations.get(0).getLongitude());
+			coordinates.put(locations.get(0).getLatitude());
 		}
 		
 		geometry.put("coordinates", coordinates);
-		if (coordinates.length() > 1) {
-			geometry.put("type", "LineString");
-		} else {
-			geometry.put("type", "Point");
-		}
 		
 		JSONObject properties = new JSONObject();
 		properties.put("activity", activity.toString());
