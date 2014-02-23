@@ -83,7 +83,10 @@ public class Route {
 		JSONArray features = new JSONArray();
 		
 		for (RouteSegment rs : route) {
-			features.put(rs.toJson());
+			JSONObject j = rs.toJson();
+			if (j != null) {
+				features.put(j);
+			}
 		}
 		
 		featureCollection.put("type", "FeatureCollection");
