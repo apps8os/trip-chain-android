@@ -1,13 +1,26 @@
 package fi.aalto.tripchain;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.UUID;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -25,6 +38,10 @@ public class BackgroundService extends Service  {
 	
 	private volatile boolean recording = false;
 	
+	private String clientId = null;
+	
+	private long timestamp;
+	
 	
 	public synchronized Route getRoute() {
 		return this.route;
@@ -35,6 +52,27 @@ public class BackgroundService extends Service  {
 		Log.d(TAG, "onCreate");
 		
 		this.handler = new Handler();
+		
+		SharedPreferences settings = getSharedPreferences("fi.aalto.tripchain.settings", MODE_MULTI_PROCESS);
+		this.clientId = settings.getString("client_id", null);
+		if (this.clientId == null) {
+			Log.d(TAG, "creating a new client id");
+			this.clientId = UUID.randomUUID().toString();
+			Editor e = settings.edit();
+			e.putString("client_id", this.clientId);
+			e.apply();
+		}
+	}
+	
+	private void postTrip(JSONObject trip) throws ClientProtocolException, IOException {
+	    HttpClient client = new DefaultHttpClient();
+	    HttpPost httpPost = new HttpPost("http://tripchaingame.herokuapp.com/api/trip.json");
+	    
+	    httpPost.addHeader("Content-Type", "application/json");
+	    httpPost.setEntity(new StringEntity(trip.toString()));
+	    
+	    HttpResponse response = client.execute(httpPost);
+	    Log.d(TAG, "post status: " + response.getStatusLine());
 	}
 	
 	public void stop() {
@@ -43,26 +81,23 @@ public class BackgroundService extends Service  {
 		this.locationListener.stop();
 		this.recording = false;
 		
-		try {
-			Intent email = new Intent(Intent.ACTION_SEND);
-			email.putExtra(Intent.EXTRA_EMAIL,
-					new String[] { "jukkapekka.virtanen@gmail.com" });
-			email.putExtra(Intent.EXTRA_SUBJECT,
-					"Tripchain route " + new Date().toGMTString());
-			email.putExtra(Intent.EXTRA_TEXT, route.toJson().toString(2));
-			email.setType("message/rfc822");
-			
-			
-			
-			Intent chooser = Intent.createChooser(email, "Choose an Email client :");
-			chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-			startActivity(chooser);
-		} catch (JSONException e) {
-			Log.d(TAG, "Could not serialize route", e);
-		}
-
-		stopForeground(true);
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					JSONObject trip = new JSONObject();
+					trip.put("clientId", clientId);
+					trip.put("trip", route.toJson());
+					trip.put("startedAt", timestamp);
+					postTrip(trip);
+				} catch (Exception e) {
+					Log.d(TAG, "Failed to post trip", e);
+				}
+				
+				stopForeground(true);
+				return null;
+			}
+		}.execute();
 	}
 	
 	public void start() {
@@ -72,9 +107,10 @@ public class BackgroundService extends Service  {
 			    .setSmallIcon(R.drawable.ic_launcher)
 			    .setContentTitle("Tripchain")
 			    .setContentText("Recording route");
-		
+
 		startForeground(12345, mBuilder.build());
 		
+		this.timestamp = System.currentTimeMillis();
 		this.recording = true;
 		this.route = new Route();
 		this.activityReceiver = new ActivityReceiver(this);
