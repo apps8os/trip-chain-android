@@ -1,4 +1,4 @@
-package fi.aalto.tripchain;
+package fi.aalto.tripchain.route;
 
 import java.util.ArrayList;
 import java.util.List;

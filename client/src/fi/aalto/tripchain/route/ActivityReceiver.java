@@ -1,10 +1,13 @@
-package fi.aalto.tripchain;
+package fi.aalto.tripchain.route;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+
+import fi.aalto.tripchain.BackgroundService;
+import fi.aalto.tripchain.Configuration;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -16,7 +19,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-class ActivityReceiver extends BroadcastReceiver implements 
+public class ActivityReceiver extends BroadcastReceiver implements 
 		GooglePlayServicesClient.ConnectionCallbacks, 
 		GooglePlayServicesClient.OnConnectionFailedListener {
 	private final static String TAG = ActivityReceiver.class.getSimpleName();

@@ -14,6 +14,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fi.aalto.tripchain.route.ActivityReceiver;
+import fi.aalto.tripchain.route.LocationListener;
+import fi.aalto.tripchain.route.Route;
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;

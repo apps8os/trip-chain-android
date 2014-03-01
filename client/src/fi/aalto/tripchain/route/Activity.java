@@ -1,4 +1,4 @@
-package fi.aalto.tripchain;
+package fi.aalto.tripchain.route;
 
 public enum Activity {
 	IN_VEHICLE("in-vehicle"), 

@@ -1,12 +1,13 @@
-package fi.aalto.tripchain;
+package fi.aalto.tripchain.route;
 
+import fi.aalto.tripchain.BackgroundService;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-class LocationListener implements android.location.LocationListener {
+public class LocationListener implements android.location.LocationListener {
 	private final static String TAG = LocationListener.class.getSimpleName();
 	private BackgroundService service;
 	private LocationManager locationManager;

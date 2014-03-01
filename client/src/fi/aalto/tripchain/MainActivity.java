@@ -32,6 +32,10 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		startService();
+		
+		
+
+		chooseAccount();
 	}
 
 	private void initUi() {
@@ -61,17 +65,15 @@ public class MainActivity extends Activity {
 
 		this.startButton.setText(!recording ? "Start recording"
 				: "Stop recording");
-		
-		chooseAccount();
 	}
-	
+
 	private void chooseAccount() {
 		// use https://github.com/frakbot/Android-AccountChooser for
 		// compatibility with older devices
 		Intent intent = AccountManager.newChooseAccountIntent(null, null,
-		new String[] { "com.google" }, false, null, null, null, null);
+				new String[] { "com.google" }, true, null, null, null, null);
 		startActivityForResult(intent, 1237);
-		}
+	}
 
 	private void startService() {
 		serviceIntent = new Intent(this, BackgroundService.class);
@@ -121,7 +123,8 @@ public class MainActivity extends Activity {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Select a Google account");
 			AccountManager accountManager = AccountManager.get(this);
-			final Account[] accounts = accountManager.getAccountsByType("com.google");
+			final Account[] accounts = accountManager
+					.getAccountsByType("com.google");
 			final int size = accounts.length;
 			String[] names = new String[size];
 			for (int i = 0; i < size; i++) {
