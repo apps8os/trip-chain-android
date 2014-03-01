@@ -32,10 +32,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		startService();
-		
-		
-
-		chooseAccount();
 	}
 
 	private void initUi() {
@@ -65,14 +61,6 @@ public class MainActivity extends Activity {
 
 		this.startButton.setText(!recording ? "Start recording"
 				: "Stop recording");
-	}
-
-	private void chooseAccount() {
-		// use https://github.com/frakbot/Android-AccountChooser for
-		// compatibility with older devices
-		Intent intent = AccountManager.newChooseAccountIntent(null, null,
-				new String[] { "com.google" }, true, null, null, null, null);
-		startActivityForResult(intent, 1237);
 	}
 
 	private void startService() {
@@ -115,29 +103,4 @@ public class MainActivity extends Activity {
 			Log.i(TAG, "Service connection closed " + name);
 		}
 	};
-
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DIALOG_ACCOUNTS:
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Select a Google account");
-			AccountManager accountManager = AccountManager.get(this);
-			final Account[] accounts = accountManager
-					.getAccountsByType("com.google");
-			final int size = accounts.length;
-			String[] names = new String[size];
-			for (int i = 0; i < size; i++) {
-				names[i] = accounts[i].name;
-			}
-			builder.setItems(names, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					// Stuff to do when the account is selected by the user
-					Log.d(TAG, "" + accounts[which]);
-				}
-			});
-			return builder.create();
-		}
-		return null;
-	}
 }

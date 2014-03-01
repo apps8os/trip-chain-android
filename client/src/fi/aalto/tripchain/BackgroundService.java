@@ -57,7 +57,7 @@ public class BackgroundService extends Service  {
 		
 		this.handler = new Handler();
 		
-		SharedPreferences settings = getSharedPreferences("fi.aalto.tripchain.settings", MODE_MULTI_PROCESS);
+		SharedPreferences settings = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 		this.clientId = settings.getString("client_id", null);
 		if (this.clientId == null) {
 			Log.d(TAG, "creating a new client id");
