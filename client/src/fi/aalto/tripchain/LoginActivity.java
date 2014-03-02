@@ -45,8 +45,7 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		accountManager = AccountManager.get(this);
 
-		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES,
-				MODE_MULTI_PROCESS);
+		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 		String loginId = preferences.getString(KEY_LOGIN_ID, null);
 		if (loginId != null) {
 			startMain();
@@ -57,35 +56,28 @@ public class LoginActivity extends Activity {
 	}
 
 	public void chooseAccount(View _) {
-		// use https://github.com/frakbot/Android-AccountChooser for
-		// compatibility with older devices
-		Intent intent = AccountManager.newChooseAccountIntent(null, null,
-				new String[] { "com.google" }, false, null, null, null, null);
+		Intent intent = AccountManager.newChooseAccountIntent(null, null, new String[] { "com.google" },
+				false, null, null, null, null);
 		startActivityForResult(intent, ACCOUNT_CODE);
 	}
 
 	private void getUserId() {
 		Log.e(TAG, getToken());
-		final ProgressDialog dialog = ProgressDialog.show(this, "",
-				"Loading. Please wait...", true);
+		final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 
 		new AsyncTask<Void, Void, Boolean>() {
 			protected Boolean doInBackground(Void... _) {
 				try {
 					String token = getToken();
 
-					URL url = new URL(
-							"https://www.googleapis.com/oauth2/v1/userinfo?access_token="
-									+ token);
-					HttpURLConnection con = (HttpURLConnection) url
-							.openConnection();
+					URL url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + token);
+					HttpURLConnection con = (HttpURLConnection) url.openConnection();
 					int serverCode = con.getResponseCode();
 					// successful query
 					if (serverCode == 200) {
 						InputStream is = con.getInputStream();
 
-						String message = new Scanner(is, "UTF-8").useDelimiter(
-								"\\A").next();
+						String message = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
 						JSONObject j = new JSONObject(message);
 						is.close();
 
@@ -93,20 +85,17 @@ public class LoginActivity extends Activity {
 						editor.putString(KEY_LOGIN_ID, j.getString("id"));
 						editor.commit();
 
+						GoogleAuthUtil.invalidateToken(LoginActivity.this, token);
+
 						return true;
 						// bad token, invalidate and get a new one
 					} else if (serverCode == 401) {
-						GoogleAuthUtil.invalidateToken(LoginActivity.this,
-								token);
-						Log.e(TAG,
-								"Server auth error: "
-										+ new Scanner(con.getErrorStream(),
-												"UTF-8").useDelimiter("\\A")
-												.next());
+						GoogleAuthUtil.invalidateToken(LoginActivity.this, token);
+						Log.e(TAG, "Server auth error: "
+								+ new Scanner(con.getErrorStream(), "UTF-8").useDelimiter("\\A").next());
 						// unknown error, do something else
 					} else {
-						Log.e(TAG, "Server returned the following error code: "
-								+ serverCode, null);
+						Log.e(TAG, "Server returned the following error code: " + serverCode, null);
 					}
 
 				} catch (Exception e) {
@@ -140,8 +129,7 @@ public class LoginActivity extends Activity {
 			requestToken();
 		} else if (requestCode == ACCOUNT_CODE) {
 
-			String accountName = data
-					.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+			String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 			setUser(accountName);
 
 			Log.d(TAG, "ACCOUNT_CODE " + accountName);
@@ -167,8 +155,7 @@ public class LoginActivity extends Activity {
 
 		Log.d(TAG, "Request token. " + (userAccount != null));
 
-		accountManager.getAuthToken(userAccount, "oauth2:" + SCOPE, null, this,
-				new OnTokenAcquired(), null);
+		accountManager.getAuthToken(userAccount, "oauth2:" + SCOPE, null, this, new OnTokenAcquired(), null);
 	}
 
 	private void invalidateToken() {
@@ -217,8 +204,7 @@ public class LoginActivity extends Activity {
 				if (launch != null) {
 					startActivityForResult(launch, AUTHORIZATION_CODE);
 				} else {
-					String token = bundle
-							.getString(AccountManager.KEY_AUTHTOKEN);
+					String token = bundle.getString(AccountManager.KEY_AUTHTOKEN);
 
 					setToken(token);
 
