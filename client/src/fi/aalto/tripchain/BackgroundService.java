@@ -42,9 +42,9 @@ public class BackgroundService extends Service  {
 	
 	private volatile boolean recording = false;
 	
-	private String clientId = null;
-	
 	private long timestamp;
+	
+	private SharedPreferences preferences;
 	
 	
 	public synchronized Route getRoute() {
@@ -57,15 +57,7 @@ public class BackgroundService extends Service  {
 		
 		this.handler = new Handler();
 		
-		SharedPreferences settings = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
-		this.clientId = settings.getString("client_id", null);
-		if (this.clientId == null) {
-			Log.d(TAG, "creating a new client id");
-			this.clientId = UUID.randomUUID().toString();
-			Editor e = settings.edit();
-			e.putString("client_id", this.clientId);
-			e.apply();
-		}
+		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 	}
 	
 	private void postTrip(JSONObject trip) throws ClientProtocolException, IOException {
@@ -90,7 +82,7 @@ public class BackgroundService extends Service  {
 			protected Void doInBackground(Void... params) {
 				try {
 					JSONObject trip = new JSONObject();
-					trip.put("clientId", clientId);
+					trip.put("clientId", preferences.getString("login_id", null));
 					trip.put("trip", route.toJson());
 					trip.put("startedAt", timestamp);
 					postTrip(trip);
