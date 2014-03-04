@@ -115,15 +115,11 @@ public class LoginActivity extends Activity implements OnClickListener, Connecti
 
 		if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 			Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-			String personName = currentPerson.getDisplayName();
-			Toast.makeText(this, personName + " " + currentPerson.getId(), Toast.LENGTH_LONG).show();
-			Log.i(TAG, personName + " " + currentPerson.getId());
 			
 			Editor e = preferences.edit();
 			e.putString(KEY_LOGIN_ID, currentPerson.getId());
 			e.commit();
 			
-
 	        Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
 			startMain();
 		}
