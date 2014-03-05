@@ -1,0 +1,3 @@
+[submodule "Android-AccountChooser"]
+	path = Android-AccountChooser
+	url = https://github.com/frakbot/Android-AccountChooser.git

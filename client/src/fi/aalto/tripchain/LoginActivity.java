@@ -7,17 +7,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+import net.frakbot.accounts.chooser.AccountChooser;
+
 import org.json.JSONObject;
 
-import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.Scopes;
 
-import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -65,8 +63,8 @@ public class LoginActivity extends Activity {
 	}
 
 	public void chooseAccount(View _) {
-		Intent intent = AccountManager.newChooseAccountIntent(null, null,
-				new String[] { "com.google" }, false, null, null, null, null);
+		Intent intent = AccountChooser.newChooseAccountIntent(null, null, new String[] { "com.google" }, 
+				false, null, null, null, null, this);
 		startActivityForResult(intent, ACCOUNT_CODE);
 	}
 
