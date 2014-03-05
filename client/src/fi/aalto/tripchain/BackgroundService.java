@@ -82,7 +82,7 @@ public class BackgroundService extends Service  {
 			protected Void doInBackground(Void... params) {
 				try {
 					JSONObject trip = new JSONObject();
-					trip.put("clientId", preferences.getString("login_id", null));
+					trip.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
 					trip.put("trip", route.toJson());
 					trip.put("startedAt", timestamp);
 					postTrip(trip);
