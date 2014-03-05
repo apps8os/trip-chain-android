@@ -19,6 +19,7 @@ import fi.aalto.tripchain.route.LocationListener;
 import fi.aalto.tripchain.route.Route;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -98,11 +99,15 @@ public class BackgroundService extends Service  {
 	
 	public void start() {
 		Log.d(TAG, "Starting!");
+
+		PendingIntent pe = PendingIntent.getActivity(this, 0, new Intent(this, LoginActivity.class), 0);
+		
 		NotificationCompat.Builder mBuilder =
 			    new NotificationCompat.Builder(this)
 			    .setSmallIcon(R.drawable.ic_launcher)
 			    .setContentTitle("Tripchain")
-			    .setContentText("Recording route");
+			    .setContentText("Recording route")
+			    .setContentIntent(pe);
 
 		startForeground(12345, mBuilder.build());
 		
