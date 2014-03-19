@@ -54,6 +54,17 @@ public class ActivityReceiver extends BroadcastReceiver implements
 			DetectedActivity da = result.getMostProbableActivity();
 			Activity activity = getActivityString(da);
 			
+			if (activity == Activity.UNKNOWN) {
+				// choosing second most probable
+				for (DetectedActivity d : result.getProbableActivities()) {
+					Activity tmp = getActivityString(d);
+					if (tmp != Activity.UNKNOWN) {
+						activity = tmp;
+						break;
+					}
+				}
+			}
+			
 			Log.d(TAG, "Probably: " + activity);
 			
 			this.service.getRoute().onActivity(activity);
@@ -114,4 +125,4 @@ public class ActivityReceiver extends BroadcastReceiver implements
 		service.unregisterReceiver(this);
 	}
 
-};
+}
