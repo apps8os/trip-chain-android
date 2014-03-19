@@ -1,38 +1,63 @@
 package fi.aalto.tripchain.route;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
+
 import fi.aalto.tripchain.BackgroundService;
-import android.content.Context;
+
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-public class LocationListener implements android.location.LocationListener {
+public class LocationListener implements 
+		GooglePlayServicesClient.ConnectionCallbacks, 
+		GooglePlayServicesClient.OnConnectionFailedListener,
+		com.google.android.gms.location.LocationListener {
 	private final static String TAG = LocationListener.class.getSimpleName();
-	private BackgroundService service;
-	private LocationManager locationManager;
 	
-	private final static int MINUMUM_POSITION_THRESHOLD = 50; // meters
-	private final static int MINIMUM_POSITION_INTERVAL = 5000; // milliseconds	
+	private LocationClient locationClient;
+	
+	private LocationRequest locationRequest;
+	
+	private BackgroundService service;
 	
 	public LocationListener(BackgroundService service) {
 		this.service = service;
 		
-		this.locationManager = (LocationManager) service.getSystemService(Context.LOCATION_SERVICE);
+        locationRequest = LocationRequest.create()
+				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+				.setInterval(5000)
+				.setFastestInterval(1000)
+		        .setSmallestDisplacement(50);
 		
-		try {
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 
-					MINIMUM_POSITION_INTERVAL, MINUMUM_POSITION_THRESHOLD, this);
-		} catch (Exception ex) {
-			Log.d(TAG, "failed requesting gps location updates", ex);
-		}
+		locationClient = new LocationClient(service, this, this);
+		locationClient.connect();
+	}
 
-		try {
-			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 
-					MINIMUM_POSITION_INTERVAL, MINUMUM_POSITION_THRESHOLD, this);
-		} catch (Exception ex) {
-			Log.d(TAG, "failed requesting network location updates", ex);
-		}
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+		Log.d(TAG, "Connection failed");
+	}
+
+	@Override
+	public void onConnected(Bundle connectionHint) {
+		Log.d(TAG, "Connection succeeded");
+
+    	locationClient.requestLocationUpdates(locationRequest, this);
+    	Log.d(TAG, "Requested location updates");
+
+	}
+
+	@Override
+	public void onDisconnected() {
+		Log.i(TAG, "Disconnected");
+	}
+	
+	public void stop() {
+		locationClient.removeLocationUpdates(this);
+		locationClient.disconnect();
 	}
 
 	@Override
@@ -44,21 +69,4 @@ public class LocationListener implements android.location.LocationListener {
 		
 		this.service.getRoute().onLocation(location);
 	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
-	
-	public void stop() {
-		locationManager.removeUpdates(this);
-	}
-	
 }
