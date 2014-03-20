@@ -25,6 +25,10 @@ public class RouteSegment {
 		locations.add(location);
 	}
 	
+	public Location getLastLocation() {
+		return this.locations.get(this.locations.size() - 1);
+	}
+	
 	public JSONObject toJson() throws JSONException {
 		/*
 		 * {

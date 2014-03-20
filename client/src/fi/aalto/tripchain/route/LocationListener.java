@@ -30,7 +30,7 @@ public class LocationListener implements
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 				.setInterval(5000)
 				.setFastestInterval(1000)
-		        .setSmallestDisplacement(50);
+		        .setSmallestDisplacement(10);
 		
 		locationClient = new LocationClient(service, this, this);
 		locationClient.connect();
