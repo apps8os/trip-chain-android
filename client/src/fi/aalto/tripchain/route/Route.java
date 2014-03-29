@@ -27,7 +27,10 @@ public class Route {
 	    } else {
 	    	RouteSegment lastSegment = route.get(route.size() - 1);
 	    	if (lastSegment.activity != activity) {
-	    		route.add(new RouteSegment(activity));
+	    		// new segment should begin where old one ends
+	    		RouteSegment newSegment = new RouteSegment(activity);
+	    		newSegment.addLocation(lastSegment.getLastLocation());
+	    		route.add(newSegment);
 	    	}
 	    }
 	}

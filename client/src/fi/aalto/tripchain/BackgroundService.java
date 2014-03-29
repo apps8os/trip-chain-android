@@ -24,6 +24,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
 
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -84,6 +85,10 @@ public class BackgroundService extends Service  {
 				try {
 					JSONObject trip = new JSONObject();
 					trip.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
+					
+					PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+					trip.put("clientVersion", pInfo.versionName);
+					
 					trip.put("trip", route.toJson());
 					trip.put("startedAt", timestamp);
 					postTrip(trip);
