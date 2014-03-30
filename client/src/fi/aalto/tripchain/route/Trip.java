@@ -68,7 +68,9 @@ public class Trip {
 			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 			trip.put("clientVersion", pInfo.versionName);
 			
-			trip.put("trip", route.toJson());
+			trip.put("trip", route.toFeatureCollection());
+			trip.put("locations", route.toLocations());
+			trip.put("activities", route.toActivities());
 			trip.put("startedAt", timestamp);	
 			
 			postTrip(trip);

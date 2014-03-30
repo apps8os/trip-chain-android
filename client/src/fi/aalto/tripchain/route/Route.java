@@ -13,10 +13,25 @@ public class Route {
 	private List<RouteSegment> route = new ArrayList<RouteSegment>();
 	private Location lastLocation;
 	
+	private List<Location> locations = new ArrayList<Location>();
+	private List<ActivityModel> activities = new ArrayList<ActivityModel>();
+	
+	private static class ActivityModel {
+		final long timestamp;
+		final Activity activity;
+		
+		public ActivityModel(Activity activity) {
+			this.activity = activity;
+			this.timestamp = System.currentTimeMillis();
+		}
+	}
+	
 	public void onActivity(Activity activity) {
 		if (activity == Activity.TILTING) {
 			return;
 		}
+		
+		this.activities.add(new ActivityModel(activity));
 		
 	    if (route.size() == 0) {
 	    	route.add(new RouteSegment(activity));
@@ -36,6 +51,8 @@ public class Route {
 	}
 	
 	public void onLocation(Location location) {
+		this.locations.add(location);
+		
 	    if (route.size() == 0) {
 	    	lastLocation = location;
 	    	return;
@@ -45,43 +62,7 @@ public class Route {
     	lastSegment.addLocation(location);
 	}
 	
-	public JSONObject toJson() throws JSONException {
-		/*
-		  { "type": "FeatureCollection",
-		    "features": [
-		      { "type": "Feature",
-		        "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
-		        "properties": {"prop0": "value0"}
-		        },
-		      { "type": "Feature",
-		        "geometry": {
-		          "type": "LineString",
-		          "coordinates": [
-		            [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
-		            ]
-		          },
-		        "properties": {
-		          "prop0": "value0",
-		          "prop1": 0.0
-		          }
-		        },
-		      { "type": "Feature",
-		         "geometry": {
-		           "type": "Polygon",
-		           "coordinates": [
-		             [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-		               [100.0, 1.0], [100.0, 0.0] ]
-		             ]
-		         },
-		         "properties": {
-		           "prop0": "value0",
-		           "prop1": {"this": "that"}
-		           }
-		         }
-		       ]
-		     }		
-		 */
-		
+	public JSONObject toFeatureCollection() throws JSONException {		
 		JSONObject featureCollection = new JSONObject();
 		JSONArray features = new JSONArray();
 		
@@ -96,5 +77,34 @@ public class Route {
 		featureCollection.put("features", features);
 		
 		return featureCollection;
+	}
+	
+	public JSONArray toLocations() throws JSONException {
+		JSONArray locations = new JSONArray();
+		
+		for (Location l : this.locations) {
+			JSONObject location = new JSONObject();
+			location.put("time", l.getTime());
+			location.put("longitude", l.getLongitude());
+			location.put("latitude", l.getLatitude());
+			location.put("speed", l.getSpeed());
+			location.put("altitude", l.getAltitude());
+			location.put("bearing", l.getBearing());
+			location.put("accuracy", l.getAccuracy());
+		}
+		
+		return locations;
+	}
+	
+	public JSONArray toActivities() throws JSONException {
+		JSONArray activities = new JSONArray();
+		
+		for (ActivityModel a : this.activities) {
+			JSONObject activity = new JSONObject();
+			activity.put("time", a.timestamp);
+			activity.put("value", a.activity.toString());
+		}
+		
+		return activities;
 	}
 }
