@@ -13,6 +13,7 @@ public class LocationListener extends LocationReceiver {
 
 	public LocationListener(Context context, Route route) {
 		super(context);
+		this.route = route;
 	}
 	
 	@Override

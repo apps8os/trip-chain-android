@@ -1,5 +1,7 @@
 package fi.aalto.tripchain;
 
+import java.util.Random;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -45,10 +47,11 @@ public class BackgroundService extends Service  {
 			    .setContentText("Recording route")
 			    .setContentIntent(pe);
 
-		startForeground(12345, mBuilder.build());
+		startForeground(new Random().nextInt(), mBuilder.build());
 		
 		this.recording = true;
 		
+		this.trip = new Trip(this);
 		this.trip.start();
 	}
 	

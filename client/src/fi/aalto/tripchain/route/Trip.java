@@ -73,6 +73,7 @@ public class Trip {
 			trip.put("activities", route.toActivities());
 			trip.put("startedAt", timestamp);	
 			
+			Log.d(TAG, trip.toString(2));
 			postTrip(trip);
 		} catch (Exception e) {
 			Log.d(TAG, "Failed to post trip", e);

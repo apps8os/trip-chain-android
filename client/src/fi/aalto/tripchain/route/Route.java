@@ -91,6 +91,8 @@ public class Route {
 			location.put("altitude", l.getAltitude());
 			location.put("bearing", l.getBearing());
 			location.put("accuracy", l.getAccuracy());
+			
+			locations.put(location);
 		}
 		
 		return locations;
@@ -103,6 +105,8 @@ public class Route {
 			JSONObject activity = new JSONObject();
 			activity.put("time", a.timestamp);
 			activity.put("value", a.activity.toString());
+			
+			activities.put(activity);
 		}
 		
 		return activities;
