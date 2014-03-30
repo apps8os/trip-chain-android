@@ -1,6 +1,7 @@
 package fi.aalto.tripchain.route;
 
 import android.app.Service;
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 import fi.aalto.tripchain.receivers.LocationReceiver;
@@ -10,8 +11,8 @@ public class LocationListener extends LocationReceiver {
 	
 	private static final String TAG = LocationListener.class.getSimpleName();
 
-	public LocationListener(Service service, Route route) {
-		super(service);
+	public LocationListener(Context context, Route route) {
+		super(context);
 	}
 	
 	@Override

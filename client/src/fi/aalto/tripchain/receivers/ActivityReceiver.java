@@ -18,30 +18,33 @@ import fi.aalto.tripchain.Configuration;
 
 public abstract class ActivityReceiver extends BroadcastReceiver implements 
 		GooglePlayServicesClient.ConnectionCallbacks, 
-		GooglePlayServicesClient.OnConnectionFailedListener {
+		GooglePlayServicesClient.OnConnectionFailedListener,
+		Receiver {
 	private final static String TAG = ActivityReceiver.class.getSimpleName();
 	
 	private ActivityRecognitionClient activityRecognitionClient;
 	
-	private Service service;
+	private Context context;
 	
 	private boolean starting = true;
 	
 	private Intent activityIntent;
     private PendingIntent callbackIntent;
 	
-	public ActivityReceiver(Service service) {
-		this.service = service;
+	public ActivityReceiver(Context context) {
+		this.context = context;
 		
 		this.activityIntent = new Intent(Configuration.ACTIVITY_INTENT);
-		this.callbackIntent = PendingIntent.getBroadcast(service, 0, activityIntent,            
+		this.callbackIntent = PendingIntent.getBroadcast(context, 0, activityIntent,            
 	    		PendingIntent.FLAG_UPDATE_CURRENT);
-		
+		this.activityRecognitionClient = new ActivityRecognitionClient(context, this, this);
+	}
+	
+	public void start() {
 		IntentFilter intentFilter = new IntentFilter(Configuration.ACTIVITY_INTENT);
-		service.registerReceiver(this, intentFilter);
+		context.registerReceiver(this, intentFilter);
 		
-		activityRecognitionClient = new ActivityRecognitionClient(service, this, this);
-		activityRecognitionClient.connect();
+		activityRecognitionClient.connect();		
 	}
 	
 
@@ -72,7 +75,7 @@ public abstract class ActivityReceiver extends BroadcastReceiver implements
 	
 	public void stop() {
 		activityRecognitionClient.connect();
-		service.unregisterReceiver(this);
+		context.unregisterReceiver(this);
 	}
 	
 	@Override
@@ -80,11 +83,9 @@ public abstract class ActivityReceiver extends BroadcastReceiver implements
 		if (ActivityRecognitionResult.hasResult(intent)) {
 			ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 			
-			
 			onActivityRecognitionResult(result);
 		}		
 	}
 	
 	public abstract void onActivityRecognitionResult(ActivityRecognitionResult activity);
-
 }

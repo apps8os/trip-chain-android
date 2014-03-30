@@ -1,6 +1,7 @@
 package fi.aalto.tripchain.receivers;
 
 import android.app.Service;
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,17 +14,18 @@ import com.google.android.gms.location.LocationRequest;
 public abstract class LocationReceiver implements 
 		GooglePlayServicesClient.ConnectionCallbacks, 
 		GooglePlayServicesClient.OnConnectionFailedListener,
-		com.google.android.gms.location.LocationListener {
+		com.google.android.gms.location.LocationListener,
+		Receiver {
 	private final static String TAG = LocationReceiver.class.getSimpleName();
 	
 	private LocationClient locationClient;
 	
 	private LocationRequest locationRequest;
 	
-	private Service service;
+	private Context context;
 	
-	public LocationReceiver(Service service) {
-		this.service = service;
+	public LocationReceiver(Context context) {
+		this.context = context;
 		
         locationRequest = LocationRequest.create()
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -31,8 +33,7 @@ public abstract class LocationReceiver implements
 				.setFastestInterval(1000)
 		        .setSmallestDisplacement(10);
 		
-		locationClient = new LocationClient(service, this, this);
-		locationClient.connect();
+		locationClient = new LocationClient(context, this, this);
 	}
 
 	@Override
@@ -57,6 +58,10 @@ public abstract class LocationReceiver implements
 	public void stop() {
 		locationClient.removeLocationUpdates(this);
 		locationClient.disconnect();
+	}
+	
+	public void start() {
+		locationClient.connect();		
 	}
 
 	@Override

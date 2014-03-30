@@ -1,6 +1,7 @@
 package fi.aalto.tripchain.route;
 
 import android.app.Service;
+import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
@@ -13,8 +14,8 @@ public class ActivityListener extends ActivityReceiver {
 	
 	private Route route;
 	
-	public ActivityListener(Service service, Route route) {
-		super(service);
+	public ActivityListener(Context context, Route route) {
+		super(context);
 		
 		this.route = route;
 	}
