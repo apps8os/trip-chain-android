@@ -1,9 +1,6 @@
 package fi.aalto.tripchain;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -11,32 +8,27 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import fi.aalto.tripchain.route.ActivityReceiver;
-import fi.aalto.tripchain.route.LocationListener;
-import fi.aalto.tripchain.route.Route;
-
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
-
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import fi.aalto.tripchain.route.ActivityListener;
+import fi.aalto.tripchain.route.LocationListener;
+import fi.aalto.tripchain.route.Route;
 
 public class BackgroundService extends Service  {
 	private final static String TAG = BackgroundService.class.getSimpleName();
 	
-	private ActivityReceiver activityReceiver;
+	private ActivityListener activityListener;
 	private LocationListener locationListener;
 	private Route route;
 	
@@ -75,7 +67,7 @@ public class BackgroundService extends Service  {
 	
 	public void stop() {
 		Log.d(TAG, "Stopping!");
-		this.activityReceiver.stop();
+		this.activityListener.stop();
 		this.locationListener.stop();
 		this.recording = false;
 		
@@ -119,8 +111,8 @@ public class BackgroundService extends Service  {
 		this.timestamp = System.currentTimeMillis();
 		this.recording = true;
 		this.route = new Route();
-		this.activityReceiver = new ActivityReceiver(this);
-		this.locationListener = new LocationListener(this);		
+		this.activityListener = new ActivityListener(this, route);
+		this.locationListener = new LocationListener(this, route);
 	}
 	
 	@Override

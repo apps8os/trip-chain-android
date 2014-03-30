@@ -7,9 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.gms.internal.ge;
-import com.google.android.gms.location.DetectedActivity;
-
 import android.location.Location;
 
 public class RouteSegment {

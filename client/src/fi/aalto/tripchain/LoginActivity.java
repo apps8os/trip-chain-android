@@ -1,8 +1,6 @@
 package fi.aalto.tripchain;
 
-import java.io.IOException;
 import java.io.InputStream;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
@@ -10,10 +8,6 @@ import java.util.Scanner;
 import net.frakbot.accounts.chooser.AccountChooser;
 
 import org.json.JSONObject;
-
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.common.Scopes;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -26,6 +20,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.Scopes;
 
 public class LoginActivity extends Activity {
 
