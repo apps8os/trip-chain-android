@@ -1,6 +1,5 @@
 package fi.aalto.tripchain.receivers;
 
-import android.app.Service;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
@@ -47,7 +46,6 @@ public abstract class LocationReceiver implements
 
     	locationClient.requestLocationUpdates(locationRequest, this);
     	Log.d(TAG, "Requested location updates");
-
 	}
 
 	@Override

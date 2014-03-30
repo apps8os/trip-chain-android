@@ -33,7 +33,17 @@ public class Trip {
 	public void stop() {
 		this.activityListener.stop();
 		this.locationListener.stop();
-		this.report();
+		
+		new AsyncTask<Void, Void, Void>() {
+			@Override
+			protected Void doInBackground(Void... params) {
+				report();
+
+				context.stopForeground(true);
+				
+				return null;
+			}
+		}.execute();
 	}
 	
 	public void start() {
@@ -52,27 +62,19 @@ public class Trip {
 	}
 	
 	private void report() {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					JSONObject trip = new JSONObject();
-					trip.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
-					
-					PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-					trip.put("clientVersion", pInfo.versionName);
-					
-					trip.put("trip", route.toJson());
-					trip.put("startedAt", timestamp);
-					postTrip(trip);
-				} catch (Exception e) {
-					Log.d(TAG, "Failed to post trip", e);
-				}
-				
-				((Service) context).stopForeground(true);
-				return null;
-			}
-		}.execute();		
+		try {
+			JSONObject trip = new JSONObject();
+			trip.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
+			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+			trip.put("clientVersion", pInfo.versionName);
+			
+			trip.put("trip", route.toJson());
+			trip.put("startedAt", timestamp);	
+			
+			postTrip(trip);
+		} catch (Exception e) {
+			Log.d(TAG, "Failed to post trip", e);
+		}
 	}
 	
 	private void postTrip(JSONObject trip) throws ClientProtocolException, IOException {

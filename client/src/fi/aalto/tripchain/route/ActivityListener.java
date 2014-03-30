@@ -1,6 +1,5 @@
 package fi.aalto.tripchain.route;
 
-import android.app.Service;
 import android.content.Context;
 import android.util.Log;
 
