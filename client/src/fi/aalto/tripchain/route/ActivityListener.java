@@ -22,6 +22,12 @@ public class ActivityListener extends ActivityReceiver {
 	@Override
 	public void onActivityRecognitionResult(ActivityRecognitionResult result) {
 		DetectedActivity da = result.getMostProbableActivity();
+		
+		if (da.getConfidence() < 50) {
+			// not confident enough
+			return;
+		}
+		
 		Activity activity = Activity.getActivity(da);
 		
 		if (activity == Activity.UNKNOWN) {
