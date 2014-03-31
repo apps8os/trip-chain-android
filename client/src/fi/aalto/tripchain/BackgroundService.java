@@ -20,12 +20,17 @@ public class BackgroundService extends Service  {
 	private volatile boolean recording = false;
 	
 	private Trip trip;
+	
+	private Starter starter;
 
 	@Override
 	public void onCreate() {
 		Log.d(TAG, "onCreate");
 		
 		this.handler = new Handler();
+		
+		this.starter = new Starter(this);
+		this.starter.start();
 	}
 	
 	public void stop() {
@@ -58,6 +63,8 @@ public class BackgroundService extends Service  {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		
+		this.starter.stop();
 		
 		Log.d(TAG, "onDestroy");
 	}

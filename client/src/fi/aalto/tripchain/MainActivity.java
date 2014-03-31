@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
 		super.onStop();
 
 		if (!recording) {
-			stopService(serviceIntent);
+			//stopService(serviceIntent);
 		}
 
 		try {
