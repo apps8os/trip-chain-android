@@ -49,6 +49,8 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		startService();
+		
 		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 	}
 
@@ -79,8 +81,8 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
-	public void onStop() {
-		super.onStop();
+	public void onDestroy() {
+		super.onDestroy();
 
 		if (!recording) {
 			stopService(serviceIntent);
@@ -99,12 +101,6 @@ public class MainActivity extends FragmentActivity {
 		} catch (Exception e) {
 			Log.d(TAG, "Failed to unbind service", e);
 		}
-	}
-	
-	public void onStart() {
-		super.onStart();
-		
-		startService();
 	}
 
 	ServiceConnection serviceConnection = new ServiceConnection() {
