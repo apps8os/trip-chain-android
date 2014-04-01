@@ -1,14 +1,24 @@
 package fi.aalto.tripchain;
 
+import java.util.Locale;
+
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -16,21 +26,24 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 	private final static String TAG = MainActivity.class.getSimpleName();
 
 	private Intent serviceIntent;
-	private ServiceConnectionApi serviceConnectionApi;
+	ServiceConnectionApi serviceConnectionApi;
 
-	private Button startButton;
 
-	private boolean recording = false;
+	boolean recording = false;
 	
 	SharedPreferences preferences;
+	
+	private SectionsPagerAdapter mSectionsPagerAdapter;
+	private ViewPager mViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		startService();
 		
 		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
@@ -38,34 +51,17 @@ public class MainActivity extends Activity {
 
 	private void initUi() {
 		setContentView(R.layout.activity_main);
+		
+		// Create the adapter that will return a fragment for each of the three
+		// primary sections of the app.
+		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		this.startButton = (Button) findViewById(R.id.button);
-		this.startButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				if (!recording) {
-					try {
-						serviceConnectionApi.start();
-						recording = true;
-					} catch (RemoteException e) {
-					}
-				} else {
-					try {
-						serviceConnectionApi.stop();
-						recording = false;
-					} catch (RemoteException e) {
-					}
-				}
-
-				initUi();
-			}
-		});
-
-		this.startButton.setText(!recording ? "Start recording"
-				: "Stop recording");
+		// Set up the ViewPager with the sections adapter.
+		mViewPager = (ViewPager) findViewById(R.id.pager);
+		mViewPager.setAdapter(mSectionsPagerAdapter);
 	}
 
-	private void startService() {
+	void startService() {
 		serviceIntent = new Intent(this, BackgroundService.class);
 		startService(serviceIntent);
 		bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
@@ -85,7 +81,7 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private ServiceConnection serviceConnection = new ServiceConnection() {
+	ServiceConnection serviceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			Log.i(TAG, "Service connection created " + name);
@@ -137,5 +133,49 @@ public class MainActivity extends Activity {
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 		finish();
+	}
+	
+	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+		public SectionsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+		
+			if (position == 1) {
+				Fragment fragment = new TripFragment();
+				Bundle args = new Bundle();
+				//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+				fragment.setArguments(args);
+				return fragment;
+			}
+			
+			Fragment fragment = new StartFragment();
+			Bundle args = new Bundle();
+			//args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
+			fragment.setArguments(args);
+			return fragment;
+
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			Locale l = Locale.getDefault();
+			switch (position) {
+				case 0:
+					return "Start";
+				case 1:
+					return "Trip";
+				
+			}
+			return null;
+		}
 	}
 }
