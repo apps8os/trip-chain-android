@@ -1,6 +1,7 @@
 package fi.aalto.tripchain.route;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -10,6 +11,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import fi.aalto.tripchain.Client;
 import fi.aalto.tripchain.Configuration;
 import android.app.Service;
 import android.content.Context;
@@ -52,9 +54,9 @@ public class Trip {
 		this.locationListener.start();
 	}
 	
-	public Trip(Service context) {
+	public Trip(Service context, List<Client> clients) {
 		this.context = context;
-		this.route = new Route();
+		this.route = new Route(clients);
 		this.activityListener = new ActivityListener(context, route);
 		this.locationListener = new LocationListener(context, route);		
 		

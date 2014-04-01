@@ -38,6 +38,9 @@ public class StartFragment extends Fragment {
 					} catch (RemoteException e) {
 					}
 				}
+				
+				startButton.setText(!main.recording ? "Start recording"
+						: "Stop recording");
 			}
 		});
 

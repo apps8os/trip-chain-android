@@ -1,6 +1,10 @@
 package fi.aalto.tripchain;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -20,6 +24,9 @@ public class BackgroundService extends Service  {
 	private volatile boolean recording = false;
 	
 	private Trip trip;
+	
+	List<Client> clients = new CopyOnWriteArrayList<Client>();
+	private Map<Integer, Client> clientMap = new HashMap<Integer, Client>();
 
 	@Override
 	public void onCreate() {
@@ -51,7 +58,7 @@ public class BackgroundService extends Service  {
 		
 		this.recording = true;
 		
-		this.trip = new Trip(this);
+		this.trip = new Trip(this, clients);
 		this.trip.start();
 	}
 	
@@ -92,6 +99,19 @@ public class BackgroundService extends Service  {
 		@Override
 		public boolean recording() throws RemoteException {
 			return BackgroundService.this.recording;
+		}
+
+		@Override
+		public void subscribe(Client client, int hashCode) throws RemoteException {
+			clients.add(client);
+			clientMap.put(hashCode, client);
+		}
+
+		@Override
+		public void unsubscribe(int hashCode) throws RemoteException {
+			Client c = clientMap.get(hashCode);
+			clients.remove(c);
+			clientMap.remove(hashCode);
 		}
 	};
 

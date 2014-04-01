@@ -1,7 +1,10 @@
 package fi.aalto.tripchain;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -30,8 +33,8 @@ public class MainActivity extends FragmentActivity {
 	private final static String TAG = MainActivity.class.getSimpleName();
 
 	private Intent serviceIntent;
+	
 	ServiceConnectionApi serviceConnectionApi;
-
 
 	boolean recording = false;
 	
@@ -39,12 +42,12 @@ public class MainActivity extends FragmentActivity {
 	
 	private SectionsPagerAdapter mSectionsPagerAdapter;
 	private ViewPager mViewPager;
+	
+	private List<Client.Stub> clients = new ArrayList<Client.Stub>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		startService();
 		
 		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 	}
@@ -66,6 +69,15 @@ public class MainActivity extends FragmentActivity {
 		startService(serviceIntent);
 		bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
 	}
+	
+	void subscribe(Client.Stub client) {
+		try {
+			serviceConnectionApi.subscribe(client, client.hashCode());
+			this.clients.add(client);
+		} catch(RemoteException e) {
+			Log.d(TAG, "Failed to subscribe", e);
+		}
+	}
 
 	public void onStop() {
 		super.onStop();
@@ -73,12 +85,26 @@ public class MainActivity extends FragmentActivity {
 		if (!recording) {
 			stopService(serviceIntent);
 		}
+		
+		try {
+			for (Client.Stub c : clients) {
+				serviceConnectionApi.unsubscribe(c.hashCode());
+			}
+		} catch (Exception e) {
+			Log.d(TAG, "Failed to unsubscribe from background service updates");
+		}
 
 		try {
 			unbindService(serviceConnection);
 		} catch (Exception e) {
 			Log.d(TAG, "Failed to unbind service", e);
 		}
+	}
+	
+	public void onStart() {
+		super.onStart();
+		
+		startService();
 	}
 
 	ServiceConnection serviceConnection = new ServiceConnection() {
@@ -101,8 +127,6 @@ public class MainActivity extends FragmentActivity {
 			Log.i(TAG, "Service connection closed " + name);
 		}
 	};
-	
-	
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
