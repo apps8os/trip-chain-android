@@ -73,6 +73,7 @@ public class Trip {
 			trip.put("trip", route.toFeatureCollection());
 			trip.put("locations", route.toLocations());
 			trip.put("activities", route.toActivities());
+			trip.put("roads", route.toRoadSegments());
 			trip.put("startedAt", timestamp);	
 			
 			Log.d(TAG, trip.toString(2));

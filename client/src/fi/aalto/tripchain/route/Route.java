@@ -9,14 +9,15 @@ import org.json.JSONObject;
 
 import fi.aalto.tripchain.Client;
 
+import fi.aalto.tripchain.here.Address;
 import android.location.Location;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.RemoteException;
 
 public class Route {
 	private List<RouteSegment> route = new ArrayList<RouteSegment>();
 	private Location lastLocation;
+	
+	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
 
 	private List<Location> locations = new ArrayList<Location>();
 	private List<ActivityModel> activities = new ArrayList<ActivityModel>();
@@ -47,7 +48,7 @@ public class Route {
 		if (route.size() == 0) {
 			route.add(new RouteSegment(activity));
 			if (lastLocation != null) {
-				onLocation(lastLocation);
+				updateRoute(lastLocation);
 				lastLocation = null;
 			}
 		} else {
@@ -60,8 +61,56 @@ public class Route {
 			}
 		}
 	}
+	
+	private void updateRoute(Location location) {
+		if (route.size() == 0) {
+			lastLocation = location;
+		} else {
+			RouteSegment lastRouteSegment = route.get(route.size() - 1);
+			lastRouteSegment.addLocation(location);
+		}		
+	}
+	
+	private void updateRoads(Location location, List<Address> addresses) {
+		if (roadSegments.size() == 0) {
+			String street;
+			if (addresses.size() == 0) {
+				street = "";
+			} else {
+				street = addresses.get(0).street;
+			}
+			
+			RoadSegment rs = new RoadSegment(street);
+			rs.addLocation(location);
+			roadSegments.add(rs);
+			return;
+		}
+		
+		RoadSegment lastRoadSegment = roadSegments.get(roadSegments.size() - 1);
+		if (addresses.size() > 0) {
+			boolean stillOnTheSameRoad = false;
+			for (Address address : addresses) {
+				if (lastRoadSegment.match(address.street)) {
+					stillOnTheSameRoad = true;
+					break;
+				}
+			}
+			
+			if (stillOnTheSameRoad) {
+				lastRoadSegment.addLocation(location);
+			} else {
+				roadSegments.add(new RoadSegment(addresses.get(0).street));
+			}			
+		} else if (lastRoadSegment.match("")) {
+			lastRoadSegment.addLocation(location);
+		} else {
+			RoadSegment rs = new RoadSegment("");
+			rs.addLocation(location);
+			roadSegments.add(rs);
+		}
+	}
 
-	public void onLocation(Location location) {
+	public void onLocation(Location location, List<Address> addresses) {
 		this.locations.add(location);
 
 		for (Client c : clients) {
@@ -71,13 +120,8 @@ public class Route {
 			}
 		}
 		
-		if (route.size() == 0) {
-			lastLocation = location;
-			return;
-		}
-
-		RouteSegment lastSegment = route.get(route.size() - 1);
-		lastSegment.addLocation(location);
+		updateRoute(location);
+		updateRoads(location, addresses);
 	}
 
 	public JSONObject toFeatureCollection() throws JSONException {
@@ -98,9 +142,13 @@ public class Route {
 	}
 
 	public JSONArray toLocations() throws JSONException {
-		JSONArray locations = new JSONArray();
+		return toLocations(this.locations);
+	}
+	
+	private JSONArray toLocations(List<Location> locations) throws JSONException {
+		JSONArray locs = new JSONArray();
 
-		for (Location l : this.locations) {
+		for (Location l : locations) {
 			JSONObject location = new JSONObject();
 			location.put("time", l.getTime());
 			location.put("longitude", l.getLongitude());
@@ -110,10 +158,10 @@ public class Route {
 			location.put("bearing", l.getBearing());
 			location.put("accuracy", l.getAccuracy());
 
-			locations.put(location);
+			locs.put(location);
 		}
 
-		return locations;
+		return locs;
 	}
 
 	public JSONArray toActivities() throws JSONException {
@@ -128,5 +176,19 @@ public class Route {
 		}
 
 		return activities;
+	}
+	
+	public JSONArray toRoadSegments() throws JSONException {
+		JSONArray roads = new JSONArray();
+		
+		for (RoadSegment rs : this.roadSegments) {
+			JSONObject j = new JSONObject();
+			j.put("locations", toLocations(rs.locations));
+			j.put("street", rs.street);
+			
+			roads.put(j);
+		}
+		
+		return roads;
 	}
 }
