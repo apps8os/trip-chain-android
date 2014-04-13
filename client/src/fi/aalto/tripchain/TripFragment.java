@@ -6,7 +6,7 @@ import java.util.Map;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
-import fi.aalto.tripchain.route.Trip;
+import fi.aalto.tripchain.route.TripRecorder;
 
 import android.location.Location;
 import android.os.Bundle;

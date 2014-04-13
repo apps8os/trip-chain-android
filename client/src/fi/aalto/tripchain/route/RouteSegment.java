@@ -27,30 +27,6 @@ public class RouteSegment {
 	}
 	
 	public JSONObject toJson() throws JSONException {
-		/*
-		 * {
-			    "type": "LineString", 
-			    "coordinates": [
-			        [30, 10], [10, 30], [40, 40]
-			    ]
-			}
-			
-			
-			
-			{
-			    "type": "Feature",
-			    "properties": {
-			        "name": "Coors Field",
-			        "amenity": "Baseball Stadium",
-			        "popupContent": "This is where the Rockies play!"
-			    },
-			    "geometry": {
-			        "type": "Point",
-			        "coordinates": [-104.99404, 39.75621]
-			    }
-			}
-		 */
-		
 		if (locations.size() == 0) {
 			return null;
 		}
@@ -87,4 +63,6 @@ public class RouteSegment {
 		
 		return feature;
 	}
+	
+	
 }

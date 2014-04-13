@@ -14,13 +14,13 @@ import android.widget.Toast;
 import fi.aalto.tripchain.receivers.LocationReceiver;
 
 public class LocationListener extends LocationReceiver {
-	private Route route;
+	private Trip route;
 	private Context context;
 	private Handler handler;
 	
 	private static final String TAG = LocationListener.class.getSimpleName();
 
-	public LocationListener(Context context, Route route) {
+	public LocationListener(Context context, Trip route) {
 		super(context);
 		this.context = context;
 		this.route = route;

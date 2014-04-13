@@ -11,9 +11,9 @@ import fi.aalto.tripchain.receivers.ActivityReceiver;
 public class ActivityListener extends ActivityReceiver {
 	private final static String TAG = ActivityListener.class.getSimpleName();
 	
-	private Route route;
+	private Trip route;
 	
-	public ActivityListener(Context context, Route route) {
+	public ActivityListener(Context context, Trip route) {
 		super(context);
 		
 		this.route = route;

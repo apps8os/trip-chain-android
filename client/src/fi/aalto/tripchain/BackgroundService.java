@@ -14,7 +14,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import fi.aalto.tripchain.route.Trip;
+import fi.aalto.tripchain.route.TripRecorder;
 
 public class BackgroundService extends Service  {
 	private final static String TAG = BackgroundService.class.getSimpleName();
@@ -23,7 +23,7 @@ public class BackgroundService extends Service  {
 	
 	private volatile boolean recording = false;
 	
-	private Trip trip;
+	private TripRecorder trip;
 	
 	List<Client> clients = new CopyOnWriteArrayList<Client>();
 	private Map<Integer, Client> clientMap = new HashMap<Integer, Client>();
@@ -58,7 +58,7 @@ public class BackgroundService extends Service  {
 		
 		this.recording = true;
 		
-		this.trip = new Trip(this, clients);
+		this.trip = new TripRecorder(this, clients);
 		this.trip.start();
 	}
 	

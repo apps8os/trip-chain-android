@@ -1,96 +1,108 @@
 package fi.aalto.tripchain.route;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import fi.aalto.tripchain.Client;
-import fi.aalto.tripchain.Configuration;
-import android.app.Service;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.os.AsyncTask;
-import android.util.Log;
 
-public class Trip {
-	private final static String TAG = Trip.class.getSimpleName();
-	
-	private ActivityListener activityListener;
-	private LocationListener locationListener;
-	private Route route;
-	private long timestamp = 0;
-	
-	private Service context;
-	
-	private SharedPreferences preferences;
-	
-	public void stop() {
-		this.activityListener.stop();
-		this.locationListener.stop();
-		
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				report();
+import fi.aalto.tripchain.here.Address;
+import android.location.Location;
+import android.os.RemoteException;
 
-				context.stopForeground(true);
-				
-				return null;
-			}
-		}.execute();
-	}
+public class Trip {	
+	private List<Location> locations = new ArrayList<Location>();
+	private List<ActivityModel> activities = new ArrayList<ActivityModel>();
 	
-	public void start() {
-		this.timestamp = System.currentTimeMillis();
-		this.activityListener.start();
-		this.locationListener.start();
-	}
+	private List<Client> clients;
 	
-	public Trip(Service context, List<Client> clients) {
-		this.context = context;
-		this.route = new Route(clients);
-		this.activityListener = new ActivityListener(context, route);
-		this.locationListener = new LocationListener(context, route);		
-		
-		preferences = context.getSharedPreferences(Configuration.SHARED_PREFERENCES, Context.MODE_MULTI_PROCESS);
-	}
+	private Roads roads = new Roads();
+	private Route route = new Route();
 	
-	private void report() {
-		try {
-			JSONObject trip = new JSONObject();
-			trip.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
-			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			trip.put("clientVersion", pInfo.versionName);
-			
-			trip.put("trip", route.toFeatureCollection());
-			trip.put("locations", route.toLocations());
-			trip.put("activities", route.toActivities());
-			trip.put("roads", route.toRoadSegments());
-			trip.put("startedAt", timestamp);	
-			
-			Log.d(TAG, trip.toString(2));
-			postTrip(trip);
-		} catch (Exception e) {
-			Log.d(TAG, "Failed to post trip", e);
+	public Trip(List<Client> clients) {
+		this.clients = clients;
+	}
+
+	private static class ActivityModel {
+		final long timestamp;
+		final Activity activity;
+
+		public ActivityModel(Activity activity) {
+			this.activity = activity;
+			this.timestamp = System.currentTimeMillis();
 		}
 	}
+
+	public void onActivity(Activity activity) {
+		if (activity == Activity.TILTING) {
+			return;
+		}
+
+		this.activities.add(new ActivityModel(activity));
+
+		route.onActivity(activity);
+	}
+
+	public void onLocation(Location location, List<Address> addresses) {
+		this.locations.add(location);
+
+		for (Client c : clients) {
+			try {
+				c.onLocation(locations);
+			} catch (RemoteException e) {
+			}
+		}
+		
+		route.onLocation(location);
+		roads.onLocation(location, addresses);
+	}
+
+	public JSONArray toLocations() throws JSONException {
+		return toLocations(this.locations);
+	}
 	
-	private void postTrip(JSONObject trip) throws ClientProtocolException, IOException {
-	    HttpClient client = new DefaultHttpClient();
-	    HttpPost httpPost = new HttpPost("http://tripchaingame.herokuapp.com/api/trip.json");
-	    
-	    httpPost.addHeader("Content-Type", "application/json");
-	    httpPost.setEntity(new StringEntity(trip.toString()));
-	    
-	    HttpResponse response = client.execute(httpPost);
-	    Log.d(TAG, "post status: " + response.getStatusLine());
+	
+	static JSONArray toLocations(List<Location> locations) throws JSONException {
+		JSONArray locs = new JSONArray();
+
+		for (Location l : locations) {
+			JSONObject location = new JSONObject();
+			location.put("time", l.getTime());
+			location.put("longitude", l.getLongitude());
+			location.put("latitude", l.getLatitude());
+			location.put("speed", l.getSpeed());
+			location.put("altitude", l.getAltitude());
+			location.put("bearing", l.getBearing());
+			location.put("accuracy", l.getAccuracy());
+
+			locs.put(location);
+		}
+
+		return locs;
+	}
+	
+	public JSONArray toRoads() throws JSONException {
+		return this.roads.toJson();
+	}
+	
+	public JSONObject toGeoJson() throws JSONException {
+		return this.route.toJson();
+	}
+
+	public JSONArray toActivities() throws JSONException {
+		JSONArray activities = new JSONArray();
+
+		for (ActivityModel a : this.activities) {
+			JSONObject activity = new JSONObject();
+			activity.put("time", a.timestamp);
+			activity.put("value", a.activity.toString());
+
+			activities.put(activity);
+		}
+
+		return activities;
 	}
 }
