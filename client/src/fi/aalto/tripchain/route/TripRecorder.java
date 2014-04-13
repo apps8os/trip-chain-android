@@ -26,7 +26,7 @@ public class TripRecorder {
 	private ActivityListener activityListener;
 	private LocationListener locationListener;
 	private Trip trip;
-	private long timestamp = 0;
+
 	
 	private Service context;
 	
@@ -35,6 +35,8 @@ public class TripRecorder {
 	public void stop() {
 		this.activityListener.stop();
 		this.locationListener.stop();
+		
+		this.trip.stop();
 		
 		new AsyncTask<Void, Void, Void>() {
 			@Override
@@ -49,9 +51,9 @@ public class TripRecorder {
 	}
 	
 	public void start() {
-		this.timestamp = System.currentTimeMillis();
 		this.activityListener.start();
 		this.locationListener.start();
+		this.trip.start();
 	}
 	
 	public TripRecorder(Service context, List<Client> clients) {
@@ -65,16 +67,10 @@ public class TripRecorder {
 	
 	private void report() {
 		try {
-			JSONObject j = new JSONObject();
+			JSONObject j = trip.toJson();
 			j.put("userId", preferences.getString(Configuration.KEY_LOGIN_ID, null));
 			PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
 			j.put("clientVersion", pInfo.versionName);
-			
-			j.put("trip", trip.toGeoJson());
-			j.put("locations", trip.toLocations());
-			j.put("activities", trip.toActivities());
-			j.put("roads", trip.toRoads());
-			j.put("startedAt", timestamp);
 			
 			Log.d(TAG, j.toString(2));
 			postTrip(j);

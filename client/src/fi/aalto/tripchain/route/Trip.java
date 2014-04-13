@@ -22,6 +22,18 @@ public class Trip {
 	private Roads roads = new Roads();
 	private Route route = new Route();
 	
+	private long startedAt;
+	private long stoppedAt;
+	
+	public void start() {
+		startedAt = System.currentTimeMillis();
+	}
+	
+	public void stop() {
+		stoppedAt = System.currentTimeMillis();
+	}
+	
+	
 	public Trip(List<Client> clients) {
 		this.clients = clients;
 	}
@@ -83,14 +95,6 @@ public class Trip {
 
 		return locs;
 	}
-	
-	public JSONArray toRoads() throws JSONException {
-		return this.roads.toJson();
-	}
-	
-	public JSONObject toGeoJson() throws JSONException {
-		return this.route.toJson();
-	}
 
 	public JSONArray toActivities() throws JSONException {
 		JSONArray activities = new JSONArray();
@@ -104,5 +108,17 @@ public class Trip {
 		}
 
 		return activities;
+	}
+	
+	public JSONObject toJson() throws JSONException {
+		JSONObject j = new JSONObject();
+		j.put("trip", route.toJson());
+		j.put("locations", toLocations());
+		j.put("activities", toActivities());
+		j.put("roads", roads.toJson());
+		j.put("startedAt", startedAt);
+		j.put("stoppedAt", stoppedAt);
+		
+		return j;
 	}
 }
