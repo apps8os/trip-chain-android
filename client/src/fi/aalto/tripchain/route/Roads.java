@@ -49,40 +49,13 @@ public class Roads {
 	
 	void onAddress(Location location, List<Address> addresses) {
 		if (roadSegments.size() == 0) {
-			String street;
-			if (addresses.size() == 0) {
-				street = "";
-			} else {
-				street = addresses.get(0).street;
-			}
-			
-			RoadSegment rs = new RoadSegment(street);
-			rs.addLocation(location);
-			roadSegments.add(rs);
-			return;
-		}
-		
-		RoadSegment lastRoadSegment = roadSegments.get(roadSegments.size() - 1);
-		if (addresses.size() > 0) {
-			boolean stillOnTheSameRoad = false;
-			for (Address address : addresses) {
-				if (lastRoadSegment.match(address.street)) {
-					stillOnTheSameRoad = true;
-					break;
-				}
-			}
-			
-			if (stillOnTheSameRoad) {
-				lastRoadSegment.addLocation(location);
-			} else {
-				roadSegments.add(new RoadSegment(addresses.get(0).street));
-			}			
-		} else if (lastRoadSegment.match("")) {
-			lastRoadSegment.addLocation(location);
+			lastRoadSegment = new RoadSegment(location, addresses);
+			roadSegments.add(lastRoadSegment);
+		} else if (lastRoadSegment.stillOnTheSameStreet(addresses)) {
+			lastRoadSegment.addLocation(location, addresses);
 		} else {
-			RoadSegment rs = new RoadSegment("");
-			rs.addLocation(location);
-			roadSegments.add(rs);
+			lastRoadSegment = new RoadSegment(location, addresses);
+			roadSegments.add(lastRoadSegment);
 		}
 	}
 	

@@ -16,12 +16,9 @@ public class RoadSegment {
 	List<Location> locations = new ArrayList<Location>();
 	List<List<Address>> addressLists = new ArrayList<List<Address>>();
 	
-	RoadSegment(String street) {
-
-	}
-	
-	void addLocation(Location loc) {
-		this.locations.add(loc);
+	RoadSegment(Location location, List<Address> addresses) {
+		stillOnTheSameStreet(addresses);
+		addLocation(location, addresses);
 	}
 	
 	private Map<String, Integer> calculateStreetFrequency(List<Address> addresses) {
@@ -61,7 +58,7 @@ public class RoadSegment {
 		return null;
 	}
 	
-	private boolean stillOnTheSameStreet(List<Address> addresses) {
+	boolean stillOnTheSameStreet(List<Address> addresses) {
 		Map<String, Integer> frequency = calculateStreetFrequency(addresses);
 		String street = checkCommonStreet(frequency, this.locations.size() + 1);
 		if (street != null) {
@@ -72,25 +69,8 @@ public class RoadSegment {
 		return false;
 	}
 	
-	/**
-	 * Returns false when street has changed
-	 * @param location
-	 * @param addresses
-	 * @return
-	 */
-	boolean onLocation(Location location, List<Address> addresses) {		
-		if (stillOnTheSameStreet(addresses)) {
-			this.locations.add(location);
-			this.addressLists.add(addresses);
-			
-			return true;
-		}
-		
-		
-		return false;
-	}
-	
-	boolean match(String street) {
-		return this.street.equals(street);
+	void addLocation(Location location, List<Address> addresses) {		
+		this.locations.add(location);
+		this.addressLists.add(addresses);
 	}
 }
