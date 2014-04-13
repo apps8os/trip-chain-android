@@ -8,12 +8,46 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Location;
+import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 import fi.aalto.tripchain.here.Address;
+import fi.aalto.tripchain.here.ReverseGeocoder;
 
 public class Roads {
-	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
+	private static final String TAG = Roads.class.getSimpleName();
 	
-	void onLocation(Location location, List<Address> addresses) {
+	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
+	private RoadSegment lastRoadSegment = null;
+	
+	private Handler handler = new Handler();;
+	
+	void addressQuery(final Location location) {
+		ReverseGeocoder.Callback callback = new ReverseGeocoder.Callback() {
+			@Override
+			public void run(final List<Address> addresses) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						if (addresses.size() > 0) {
+							Address address = addresses.get(0);
+							Log.d(TAG, "got address! " + address.label);
+
+							onAddress(location, addresses);
+						}
+					}
+				});
+			}
+		};
+		
+		ReverseGeocoder.query(location, callback);		 
+	}
+	
+	void onLocation(Location location) {
+		addressQuery(location);
+	}
+	
+	void onAddress(Location location, List<Address> addresses) {
 		if (roadSegments.size() == 0) {
 			String street;
 			if (addresses.size() == 0) {

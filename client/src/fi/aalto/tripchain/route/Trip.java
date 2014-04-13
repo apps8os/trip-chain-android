@@ -46,7 +46,7 @@ public class Trip {
 		route.onActivity(activity);
 	}
 
-	public void onLocation(Location location, List<Address> addresses) {
+	public void onLocation(Location location) {
 		this.locations.add(location);
 
 		for (Client c : clients) {
@@ -57,7 +57,7 @@ public class Trip {
 		}
 		
 		route.onLocation(location);
-		roads.onLocation(location, addresses);
+		roads.onLocation(location);
 	}
 
 	public JSONArray toLocations() throws JSONException {

@@ -14,17 +14,16 @@ import android.widget.Toast;
 import fi.aalto.tripchain.receivers.LocationReceiver;
 
 public class LocationListener extends LocationReceiver {
-	private Trip route;
+	private Trip trip;
 	private Context context;
-	private Handler handler;
+
 	
 	private static final String TAG = LocationListener.class.getSimpleName();
 
-	public LocationListener(Context context, Trip route) {
+	public LocationListener(Context context, Trip trip) {
 		super(context);
 		this.context = context;
-		this.route = route;
-		this.handler = new Handler();
+		this.trip = trip;
 	}
 	
 	@Override
@@ -34,24 +33,6 @@ public class LocationListener extends LocationReceiver {
 				" Latitude: " + location.getLatitude() + 
 				" Longitude: " + location.getLongitude());
 		
-		ReverseGeocoder.Callback callback = new ReverseGeocoder.Callback() {
-			@Override
-			public void run(final List<Address> addresses) {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						if (addresses.size() > 0) {
-							Address address = addresses.get(0);
-							Log.d(TAG, "got address! " + address.label);
-							Toast.makeText(context, address.label, Toast.LENGTH_LONG).show();
-						}
-
-						route.onLocation(location, addresses);
-					}
-				});
-			}
-		};
-		
-		ReverseGeocoder.query(location, callback);
+		trip.onLocation(location);
 	}
 }
