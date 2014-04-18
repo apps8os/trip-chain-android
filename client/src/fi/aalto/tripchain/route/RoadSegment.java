@@ -12,7 +12,7 @@ import fi.aalto.tripchain.here.Address;
 import android.location.Location;
 
 public class RoadSegment {
-	public String street;
+	String street, country, city;
 	List<Location> locations = new ArrayList<Location>();
 	List<List<Address>> addressLists = new ArrayList<List<Address>>();
 	
@@ -72,5 +72,11 @@ public class RoadSegment {
 	void addLocation(Location location, List<Address> addresses) {		
 		this.locations.add(location);
 		this.addressLists.add(addresses);
+		
+		for (Address a : addresses) {
+			city = a.city;
+			country = a.country;
+			break;
+		}
 	}
 }

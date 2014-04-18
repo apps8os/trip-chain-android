@@ -66,6 +66,8 @@ public class Roads {
 			JSONObject j = new JSONObject();
 			j.put("locations", Trip.toLocations(rs.locations));
 			j.put("street", rs.street);
+			j.put("city", rs.city);
+			j.put("country", rs.country);
 			
 			roads.put(j);
 		}
