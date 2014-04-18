@@ -15,14 +15,11 @@ import fi.aalto.tripchain.receivers.LocationReceiver;
 
 public class LocationListener extends LocationReceiver {
 	private Trip trip;
-	private Context context;
-
 	
 	private static final String TAG = LocationListener.class.getSimpleName();
 
 	public LocationListener(Context context, Trip trip) {
 		super(context);
-		this.context = context;
 		this.trip = trip;
 	}
 	

@@ -21,7 +21,7 @@ public abstract class LocationReceiver implements
 	
 	private LocationRequest locationRequest;
 	
-	private Context context;
+	protected Context context;
 	
 	public LocationReceiver(Context context) {
 		this.context = context;

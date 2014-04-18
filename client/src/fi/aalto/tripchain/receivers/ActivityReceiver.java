@@ -23,7 +23,7 @@ public abstract class ActivityReceiver extends BroadcastReceiver implements
 	
 	private ActivityRecognitionClient activityRecognitionClient;
 	
-	private Context context;
+	protected Context context;
 	
 	private boolean starting = true;
 	
