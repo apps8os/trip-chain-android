@@ -81,10 +81,11 @@ public class TripRecorder {
 	
 	private void postTrip(JSONObject trip) throws ClientProtocolException, IOException {
 	    HttpClient client = new DefaultHttpClient();
-	    HttpPost httpPost = new HttpPost("http://tripchaingame.herokuapp.com/api/trip.json");
+	    client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+	    HttpPost httpPost = new HttpPost("http://192.168.100.101:5000/api/trip.json");//new HttpPost("http://tripchaingame.herokuapp.com/api/trip.json");
 	    
 	    httpPost.addHeader("Content-Type", "application/json");
-	    httpPost.setEntity(new StringEntity(trip.toString()));
+	    httpPost.setEntity(new StringEntity(trip.toString(), "UTF-8"));
 	    
 	    HttpResponse response = client.execute(httpPost);
 	    Log.d(TAG, "post status: " + response.getStatusLine());
