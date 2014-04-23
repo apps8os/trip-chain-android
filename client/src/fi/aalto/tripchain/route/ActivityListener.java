@@ -7,6 +7,7 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import fi.aalto.tripchain.receivers.ActivityReceiver;
+import fi.aalto.tripchain.receivers.EventDispatcher;
 
 public class ActivityListener extends ActivityReceiver {
 	private final static String TAG = ActivityListener.class.getSimpleName();
@@ -44,5 +45,6 @@ public class ActivityListener extends ActivityReceiver {
 		Log.d(TAG, "Probably: " + activity);
 		
 		route.onActivity(activity);
+		EventDispatcher.onActivity(activity);
 	}
 }

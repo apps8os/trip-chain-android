@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
+import fi.aalto.tripchain.receivers.EventDispatcher;
 import fi.aalto.tripchain.receivers.LocationReceiver;
 
 public class LocationListener extends LocationReceiver {
@@ -24,5 +25,7 @@ public class LocationListener extends LocationReceiver {
 				" Longitude: " + location.getLongitude());
 		
 		this.route.onLocation(location);
+		
+		EventDispatcher.onLocation(location);
 	}
 }
