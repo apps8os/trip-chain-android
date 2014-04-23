@@ -8,9 +8,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -25,6 +27,8 @@ public class BackgroundService extends Service  {
 	
 	private TripRecorder trip;
 	
+	private PowerManager.WakeLock wakeLock;
+	
 	List<Client> clients = new CopyOnWriteArrayList<Client>();
 	private Map<Integer, Client> clientMap = new HashMap<Integer, Client>();
 
@@ -35,15 +39,33 @@ public class BackgroundService extends Service  {
 		this.handler = new Handler();
 	}
 	
+	private void aquireWakeLock() {
+	    final PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+	    this.wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+	    this.wakeLock.acquire();
+	}
+
+	/**
+	 * Release the wake lock.
+	 */
+	private void releaseWakeLock() {
+	    if( this.wakeLock == null )
+	        return;
+	    this.wakeLock.release();
+	    this.wakeLock = null;
+	}
+	
 	public void stop() {
 		Log.d(TAG, "Stopping!");
 		this.recording = false;
 		
 		this.trip.stop();
+		releaseWakeLock();
 	}
 	
 	public void start() {
 		Log.d(TAG, "Starting!");
+		aquireWakeLock();
 
 		PendingIntent pe = PendingIntent.getActivity(this, 0, new Intent(this, LoginActivity.class), 0);
 		
