@@ -7,16 +7,17 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import fi.aalto.tripchain.receivers.ActivityReceiver;
+import fi.aalto.tripchain.receivers.EventDispatcher;
 
 public class ActivityListener extends ActivityReceiver {
 	private final static String TAG = ActivityListener.class.getSimpleName();
 	
-	private Trip route;
+	private Trip trip;
 	
-	public ActivityListener(Context context, Trip route) {
+	public ActivityListener(Context context, Trip trip) {
 		super(context);
 		
-		this.route = route;
+		this.trip = trip;
 	}
 
 	@Override
@@ -43,6 +44,7 @@ public class ActivityListener extends ActivityReceiver {
 		
 		Log.d(TAG, "Probably: " + activity);
 		
-		route.onActivity(activity);
+		trip.onActivity(activity);
+		EventDispatcher.onActivity(activity);
 	}
 }

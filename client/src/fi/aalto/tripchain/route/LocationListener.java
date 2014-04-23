@@ -10,7 +10,10 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
+
 import android.widget.Toast;
+
+import fi.aalto.tripchain.receivers.EventDispatcher;
 import fi.aalto.tripchain.receivers.LocationReceiver;
 
 public class LocationListener extends LocationReceiver {
@@ -29,7 +32,9 @@ public class LocationListener extends LocationReceiver {
 				" Accuracy: " + location.getAccuracy() +
 				" Latitude: " + location.getLatitude() + 
 				" Longitude: " + location.getLongitude());
-		
+
 		trip.onLocation(location);
+		EventDispatcher.onLocation(location);
+
 	}
 }
