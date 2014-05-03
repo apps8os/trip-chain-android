@@ -14,9 +14,12 @@ import fi.aalto.tripchain.here.Address;
 import android.location.Location;
 
 public class RoadSegment {
-	String street, country, city;
+	String currentStreetName;
+	Address latestAddress;
 	List<Location> locations = new ArrayList<Location>();
 	List<List<Address>> addressLists = new ArrayList<List<Address>>();
+
+	List<Address> currentStreetAddresses = new ArrayList<Address>();
 	
 	RoadSegment(Location location, List<Address> addresses) {
 		stillOnTheSameStreet(addresses);
@@ -63,11 +66,31 @@ public class RoadSegment {
 		return null;
 	}
 	
+	private void updateStreetAddressList() {
+		if (this.currentStreetName == null) {
+			this.currentStreetAddresses = null;
+			return;
+		}
+		
+		List<Address> streetAddresses = new ArrayList<Address>();
+		for (List<Address> locationAddresses : addressLists) {
+			for (Address a : locationAddresses) {
+				if (a.street.equals(currentStreetName)) {
+					streetAddresses.add(a);
+					break;
+				}
+			}
+		}
+		
+		this.currentStreetAddresses = streetAddresses;
+		this.latestAddress = streetAddresses.get(streetAddresses.size() - 1);
+	}
+	
 	boolean stillOnTheSameStreet(List<Address> addresses) {
 		Map<String, Integer> frequency = calculateStreetFrequency(addresses);
 		String street = checkCommonStreet(frequency, this.locations.size() + 1);
 		if (street != null) {
-			this.street = street;
+			this.currentStreetName = street;
 			return true;
 		}
 		
@@ -78,10 +101,6 @@ public class RoadSegment {
 		this.locations.add(location);
 		this.addressLists.add(addresses);
 		
-		for (Address a : addresses) {
-			city = a.city;
-			country = a.country;
-			break;
-		}
+		this.updateStreetAddressList();
 	}
 }

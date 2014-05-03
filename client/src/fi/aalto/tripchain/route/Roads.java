@@ -20,7 +20,7 @@ public class Roads {
 	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
 	private RoadSegment lastRoadSegment = null;
 	
-	private Handler handler = new Handler();;
+	private Handler handler = new Handler();
 	
 	void addressQuery(final Location location) {
 		ReverseGeocoder.Callback callback = new ReverseGeocoder.Callback() {
@@ -65,9 +65,9 @@ public class Roads {
 		for (RoadSegment rs : this.roadSegments) {
 			JSONObject j = new JSONObject();
 			j.put("locations", Trip.toLocations(rs.locations));
-			j.put("street", rs.street);
-			j.put("city", rs.city);
-			j.put("country", rs.country);
+			j.put("street", rs.latestAddress.street);
+			j.put("city", rs.latestAddress.city);
+			j.put("country", rs.latestAddress.country);
 			
 			roads.put(j);
 		}
