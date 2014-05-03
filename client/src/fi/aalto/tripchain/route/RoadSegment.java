@@ -2,8 +2,10 @@ package fi.aalto.tripchain.route;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.android.gms.common.data.Freezable;
 
@@ -21,27 +23,30 @@ public class RoadSegment {
 		addLocation(location, addresses);
 	}
 	
-	private Map<String, Integer> calculateStreetFrequency(List<Address> addresses) {
+	private Map<String, Integer> calculateStreetFrequency(List<Address> newAddresses) {
+		List<List<Address>> addresses = new ArrayList<List<Address>>();
+		addresses.addAll(addressLists);
+		addresses.add(newAddresses);
+		
 		Map<String, Integer> streetFrequency = new HashMap<String, Integer>();
-		for (List<Address> addressList : addressLists) {
+		for (List<Address> addressList : addresses) {
+			Set<String> streetSet = new HashSet<String>();
 			for (Address a : addressList) {
 				String street = a.street;
+				
+				// to not add streets multiple times per one location
+				if (streetSet.contains(street)) {
+					continue;
+				}
+				
+				streetSet.add(street);
+				
 				if (streetFrequency.containsValue(street)) {
 					int f = streetFrequency.get(street);
 					streetFrequency.put(street, f + 1);
 				} else {
 					streetFrequency.put(street, 1);
 				}
-			}
-		}
-		
-		for (Address a : addresses) {
-			String street = a.street;
-			if (streetFrequency.containsValue(street)) {
-				int f = streetFrequency.get(street);
-				streetFrequency.put(street, f + 1);
-			} else {
-				streetFrequency.put(street, 1);
 			}
 		}
 		
