@@ -27,10 +27,14 @@ public class Trip {
 	
 	public void start() {
 		startedAt = System.currentTimeMillis();
+		
+		roads.start();
 	}
 	
 	public void stop() {
 		stoppedAt = System.currentTimeMillis();
+		
+		roads.stop();
 	}
 	
 	

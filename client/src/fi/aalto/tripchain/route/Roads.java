@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.location.Location;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.widget.Toast;
 import fi.aalto.tripchain.here.Address;
@@ -20,27 +21,29 @@ public class Roads {
 	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
 	private RoadSegment lastRoadSegment = null;
 	
-	private Handler handler = new Handler();
+	private HandlerThread thread = new HandlerThread("reverseGeocodingHandlerThread");
+	
+	private Handler handler;
+	
+	void start() {
+		thread.start();
+		handler = new Handler(thread.getLooper());
+	}
+	
+	void stop() {
+		thread.quit();
+	}
 	
 	void addressQuery(final Location location) {
-		ReverseGeocoder.Callback callback = new ReverseGeocoder.Callback() {
+		handler.post(new Runnable() {
 			@Override
-			public void run(final List<Address> addresses) {
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						if (addresses.size() > 0) {
-							Address address = addresses.get(0);
-							Log.d(TAG, "got address! " + address.label);
-
-							onAddress(location, addresses);
-						}
-					}
-				});
+			public void run() {
+				List<Address> addresses = ReverseGeocoder.query(location);
+				if (addresses.size() > 0) {
+					onAddress(location, addresses);
+				}
 			}
-		};
-		
-		ReverseGeocoder.query(location, callback);		 
+		});	 
 	}
 	
 	void onLocation(Location location) {

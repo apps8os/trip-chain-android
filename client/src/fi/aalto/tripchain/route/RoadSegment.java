@@ -13,10 +13,13 @@ import org.json.JSONException;
 import com.google.android.gms.common.data.Freezable;
 
 import fi.aalto.tripchain.here.Address;
-
+import fi.aalto.tripchain.receivers.EventDispatcher;
 import android.location.Location;
+import android.util.Log;
 
 public class RoadSegment {
+	private final static String TAG = RoadSegment.class.getSimpleName();
+	
 	String currentStreetName;
 	Address latestAddress;
 	List<Location> locations = new ArrayList<Location>();
@@ -87,6 +90,10 @@ public class RoadSegment {
 		
 		this.currentStreetAddresses = streetAddresses;
 		this.latestAddress = streetAddresses.get(streetAddresses.size() - 1);
+		
+		Log.d(TAG, "Current address: " + latestAddress.label);
+		
+		EventDispatcher.onAddress(latestAddress);
 	}
 	
 	boolean stillOnTheSameStreet(List<Address> addresses) {
