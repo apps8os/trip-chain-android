@@ -10,8 +10,6 @@ import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.google.android.gms.common.data.Freezable;
-
 import fi.aalto.tripchain.here.Address;
 import fi.aalto.tripchain.receivers.EventDispatcher;
 import android.location.Location;
@@ -50,7 +48,7 @@ public class RoadSegment {
 				
 				streetSet.add(street);
 				
-				if (streetFrequency.containsValue(street)) {
+				if (streetFrequency.containsKey(street)) {
 					int f = streetFrequency.get(street);
 					streetFrequency.put(street, f + 1);
 				} else {
@@ -99,6 +97,7 @@ public class RoadSegment {
 	boolean stillOnTheSameStreet(List<Address> addresses) {
 		Map<String, Integer> frequency = calculateStreetFrequency(addresses);
 		String street = checkCommonStreet(frequency, this.locations.size() + 1);
+		
 		if (street != null) {
 			this.currentStreetName = street;
 			return true;
