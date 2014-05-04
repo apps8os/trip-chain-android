@@ -68,6 +68,7 @@ public class Roads {
 			j.put("street", rs.latestAddress.street);
 			j.put("city", rs.latestAddress.city);
 			j.put("country", rs.latestAddress.country);
+			j.put("addresses", rs.toAddresses());
 			
 			roads.put(j);
 		}

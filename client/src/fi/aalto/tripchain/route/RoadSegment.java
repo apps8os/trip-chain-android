@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import com.google.android.gms.common.data.Freezable;
 
 import fi.aalto.tripchain.here.Address;
@@ -102,5 +105,9 @@ public class RoadSegment {
 		this.addressLists.add(addresses);
 		
 		this.updateStreetAddressList();
+	}
+	
+	JSONArray toAddresses() throws JSONException {
+		return Address.toJSONArray(this.currentStreetAddresses);
 	}
 }
