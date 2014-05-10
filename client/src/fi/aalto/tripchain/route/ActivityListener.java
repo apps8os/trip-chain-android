@@ -9,6 +9,10 @@ import com.google.android.gms.location.DetectedActivity;
 import fi.aalto.tripchain.receivers.ActivityReceiver;
 import fi.aalto.tripchain.receivers.EventDispatcher;
 
+/**
+ * Receives Play Services recognized activities and forwards them to Trip and EventDispatcher.
+ *
+ */
 public class ActivityListener extends ActivityReceiver {
 	private final static String TAG = ActivityListener.class.getSimpleName();
 	

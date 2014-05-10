@@ -10,6 +10,12 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationRequest;
 
+
+/**
+ * Subscribes to Play Services location updates. 
+ * Calls onLocationChanged() when location is received.
+ *
+ */
 public abstract class LocationReceiver implements 
 		GooglePlayServicesClient.ConnectionCallbacks, 
 		GooglePlayServicesClient.OnConnectionFailedListener,

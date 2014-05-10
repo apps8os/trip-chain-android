@@ -29,6 +29,10 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+/**
+ * User interface hosting TripFragment and StartFragment.
+ *
+ */
 public class MainActivity extends FragmentActivity {
 	private final static String TAG = MainActivity.class.getSimpleName();
 
@@ -54,6 +58,10 @@ public class MainActivity extends FragmentActivity {
 		preferences = getSharedPreferences(Configuration.SHARED_PREFERENCES, MODE_MULTI_PROCESS);
 	}
 
+	/**
+	 * Initializes UI. Called when service connection is done.
+	 * The reason for this is that service might already be recording.
+	 */
 	private void initUi() {
 		setContentView(R.layout.activity_main);
 		
@@ -72,6 +80,9 @@ public class MainActivity extends FragmentActivity {
 		bindService(serviceIntent, serviceConnection, BIND_AUTO_CREATE);
 	}
 	
+	/**
+	 * Subscribes to location updates.
+	 */
 	void subscribe(Client.Stub client) {
 		try {
 			serviceConnectionApi.subscribe(client, client.hashCode());
@@ -155,6 +166,10 @@ public class MainActivity extends FragmentActivity {
 		finish();
 	}
 	
+	
+	/**
+	 * Handles View fragments.
+	 */
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {

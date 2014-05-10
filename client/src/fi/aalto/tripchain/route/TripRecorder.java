@@ -20,6 +20,10 @@ import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+/**
+ * Handles recording trips.
+ *
+ */
 public class TripRecorder {
 	private final static String TAG = TripRecorder.class.getSimpleName();
 	
@@ -27,11 +31,13 @@ public class TripRecorder {
 	private LocationListener locationListener;
 	private Trip trip;
 
-	
 	private Service context;
 	
 	private SharedPreferences preferences;
 	
+	/**
+	 * Stops receiving activities and locations. Sends recorded trip to web service.
+	 */
 	public void stop() {
 		this.activityListener.stop();
 		this.locationListener.stop();

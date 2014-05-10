@@ -9,6 +9,11 @@ import org.json.JSONObject;
 
 import android.location.Location;
 
+/**
+ * Models trip as RouteSegments.
+ * @author juke
+ *
+ */
 public class Route {
 	private List<RouteSegment> route = new ArrayList<RouteSegment>();
 	private Location lastLocation;

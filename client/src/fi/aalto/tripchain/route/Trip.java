@@ -13,6 +13,10 @@ import fi.aalto.tripchain.here.Address;
 import android.location.Location;
 import android.os.RemoteException;
 
+/**
+ * Models a trip as locations, activities, Roads and Route.
+ *
+ */
 public class Trip {	
 	private List<Location> locations = new ArrayList<Location>();
 	private List<ActivityModel> activities = new ArrayList<ActivityModel>();

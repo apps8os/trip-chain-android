@@ -1,6 +1,5 @@
 package fi.aalto.tripchain;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.app.Fragment;
@@ -9,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+/**
+ * Provides UI for starting and stopping trip recording.
+ *
+ */
 public class StartFragment extends Fragment {
 	
 	private Button startButton;

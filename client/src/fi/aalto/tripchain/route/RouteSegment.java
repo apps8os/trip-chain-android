@@ -9,6 +9,9 @@ import org.json.JSONObject;
 
 import android.location.Location;
 
+/**
+ * Represents a subpath of a trip as the mode of activity and coordinates.
+ */
 public class RouteSegment {
 	final public Activity activity;
 	List<Location> locations;

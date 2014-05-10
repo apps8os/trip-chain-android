@@ -17,14 +17,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Shows trip on a map.
+ */
 public class TripFragment extends SupportMapFragment {
 	private final static String TAG = TripFragment.class.getSimpleName();
 
-	MainActivity main;
+	private MainActivity main;
 
-	Polyline polyline;
+	private Polyline polyline;
 
-	Handler handler;
+	private Handler handler;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -15,6 +15,10 @@ import fi.aalto.tripchain.receivers.EventDispatcher;
 import android.location.Location;
 import android.util.Log;
 
+/**
+ * Represents a subpath of a trip as address-location pairs along a street.
+ *
+ */
 public class RoadSegment {
 	private final static String TAG = RoadSegment.class.getSimpleName();
 	

@@ -16,6 +16,10 @@ import android.widget.Toast;
 import fi.aalto.tripchain.receivers.EventDispatcher;
 import fi.aalto.tripchain.receivers.LocationReceiver;
 
+/**
+ * Receives Play Services locations and forwards them to Trip and EventDispatcher.
+ *
+ */
 public class LocationListener extends LocationReceiver {
 	private Trip trip;
 	
