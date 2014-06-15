@@ -1,8 +1,10 @@
 package fi.aalto.tripchain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -40,7 +42,7 @@ public class MainActivity extends FragmentActivity {
 	
 	ServiceConnectionApi serviceConnectionApi;
 
-	boolean recording = false;
+	private boolean recording = false;
 	
 	SharedPreferences preferences;
 	
@@ -48,6 +50,7 @@ public class MainActivity extends FragmentActivity {
 	private ViewPager mViewPager;
 	
 	private List<Client.Stub> clients = new ArrayList<Client.Stub>();
+	private Queue<Client.Stub> clientsToBeSubscribed = new ArrayDeque<Client.Stub>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,32 @@ public class MainActivity extends FragmentActivity {
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
+		
+		subscribeWaiting();
+	}
+
+	void subscribeWaiting() {
+		// getting size before subscribing as subscribe() adds to queue when failed
+		int size = clientsToBeSubscribed.size();
+		for (int i = 0; i < size; ++i) {
+			Client.Stub c = clientsToBeSubscribed.remove();
+			subscribe(c);
+		}
+	}
+	
+	void start() throws RemoteException {
+		subscribeWaiting();
+		serviceConnectionApi.start();
+		recording = true;
+	}
+	
+	void stop() throws RemoteException {
+		serviceConnectionApi.stop();
+		recording = false;
+	}
+	
+	boolean recording() {
+		return recording;
 	}
 
 	void startService() {
@@ -87,9 +116,12 @@ public class MainActivity extends FragmentActivity {
 		try {
 			serviceConnectionApi.subscribe(client, client.hashCode());
 			this.clients.add(client);
-		} catch(RemoteException e) {
+			return;
+		} catch(Exception e) {
 			Log.d(TAG, "Failed to subscribe", e);
 		}
+
+		clientsToBeSubscribed.add(client);
 	}
 
 	public void onDestroy() {
@@ -178,7 +210,6 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-		
 			if (position == 1) {
 				Fragment fragment = new TripFragment();
 				Bundle args = new Bundle();
