@@ -34,19 +34,29 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.Scopes;
 
+/**
+ * Activity handling logging in using Google+ account.
+ * Redirects to MainActivity on success.
+ *
+ */
 public class LoginActivity extends Activity {
 
 	private static final String TAG = LoginActivity.class.getSimpleName();
 
+	/**
+	 * Authorization scope.
+	 */
 	private static final String SCOPE = Scopes.PROFILE;
 
 	private SharedPreferences preferences;
 
+	/**
+	 * Codes for distinguishing startActivityForResult callbacks.
+	 */
 	private static final int AUTHORIZATION_CODE = 1993;
 	private static final int ACCOUNT_CODE = 1601;
 
 	private volatile String accountName = null;
-
 
 
 	@Override
@@ -76,6 +86,9 @@ public class LoginActivity extends Activity {
 		startActivityForResult(intent, ACCOUNT_CODE);
 	}
 
+	/**
+	 * Non blocking call for getting Google User ID using AsyncTask.
+	 */
 	private void getUserId() {
 		final ProgressDialog dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 
@@ -154,6 +167,9 @@ public class LoginActivity extends Activity {
 		getUserId();
 	}
 
+	/**
+	 * Pushes MainActivity on top and finishes LoginActivity.
+	 */
 	private void startMain() {
 		Intent i = new Intent(getApplicationContext(), MainActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

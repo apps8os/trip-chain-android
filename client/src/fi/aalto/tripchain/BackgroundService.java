@@ -18,18 +18,41 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import fi.aalto.tripchain.route.TripRecorder;
 
+/**
+ * Service class handling trip recording. Activities communicate with it using 
+ * ServiceConnectionApi.aidl. Service communicates with activites using Client.aidl.
+ *
+ */
 public class BackgroundService extends Service  {
 	private final static String TAG = BackgroundService.class.getSimpleName();
 	
+	/**
+	 * For running task from ServiceConnectionApi in the same thread 
+	 * as everything else.
+	 */
 	private Handler handler;
 	
+	/**
+	 * Contains whether service is recording or not.
+	 */
 	private volatile boolean recording = false;
 	
-	private TripRecorder trip;
+	private TripRecorder tripRecorder;
 	
+	/**
+	 * For keeping the phone from sleeping during recording.
+	 */
 	private PowerManager.WakeLock wakeLock;
 	
+	
+	/**
+	 * List of connected activities.
+	 */
 	List<Client> clients = new CopyOnWriteArrayList<Client>();
+	
+	/**
+	 * Mapping clients reported hashcodes to clients.
+	 */
 	private Map<Integer, Client> clientMap = new HashMap<Integer, Client>();
 
 	@Override
@@ -45,9 +68,7 @@ public class BackgroundService extends Service  {
 	    this.wakeLock.acquire();
 	}
 
-	/**
-	 * Release the wake lock.
-	 */
+
 	private void releaseWakeLock() {
 	    if( this.wakeLock == null )
 	        return;
@@ -59,10 +80,13 @@ public class BackgroundService extends Service  {
 		Log.d(TAG, "Stopping!");
 		this.recording = false;
 		
-		this.trip.stop();
+		this.tripRecorder.stop();
 		releaseWakeLock();
 	}
 	
+	/**
+	 * Starts recording trip
+	 */
 	public void start() {
 		Log.d(TAG, "Starting!");
 		aquireWakeLock();
@@ -80,8 +104,8 @@ public class BackgroundService extends Service  {
 		
 		this.recording = true;
 		
-		this.trip = new TripRecorder(this, clients);
-		this.trip.start();
+		this.tripRecorder = new TripRecorder(this, clients);
+		this.tripRecorder.start();
 	}
 	
 	@Override

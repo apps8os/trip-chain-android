@@ -15,6 +15,11 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 
 import fi.aalto.tripchain.Configuration;
 
+/**
+ * Subscribes to Activity mode recognition service and calls
+ * onActivityRecognitionResult on activity received.
+ *
+ */
 public abstract class ActivityReceiver extends BroadcastReceiver implements 
 		GooglePlayServicesClient.ConnectionCallbacks, 
 		GooglePlayServicesClient.OnConnectionFailedListener,

@@ -2,6 +2,12 @@ package fi.aalto.tripchain.route;
 
 import com.google.android.gms.location.DetectedActivity;
 
+
+/**
+ * Maps Play Service DetectedActivities to strings.
+ * @author juke
+ *
+ */
 public enum Activity {
 	IN_VEHICLE("in-vehicle"), 
 	ON_FOOT("on-foot"),

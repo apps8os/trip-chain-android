@@ -15,12 +15,19 @@ import android.widget.Toast;
 import fi.aalto.tripchain.here.Address;
 import fi.aalto.tripchain.here.ReverseGeocoder;
 
+/**
+ * Models a trip as RoadSegments.
+ *
+ */
 public class Roads {
 	private static final String TAG = Roads.class.getSimpleName();
 	
 	private List<RoadSegment> roadSegments = new ArrayList<RoadSegment>();
 	private RoadSegment lastRoadSegment = null;
 	
+	/**
+	 * HandlerThread for network activity. Prevents blocking on main thread.
+	 */
 	private HandlerThread thread = new HandlerThread("reverseGeocodingHandlerThread");
 	
 	private Handler handler;
@@ -34,7 +41,11 @@ public class Roads {
 		thread.quit();
 	}
 	
-	void addressQuery(final Location location) {
+	/**
+	 * Does reverse geocoding on coordinates.
+	 * @param location
+	 */
+	private void addressQuery(final Location location) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -50,7 +61,12 @@ public class Roads {
 		addressQuery(location);
 	}
 	
-	void onAddress(Location location, List<Address> addresses) {
+	/**
+	 * Handles roadSegments list.
+	 * @param location
+	 * @param addresses
+	 */
+	private void onAddress(Location location, List<Address> addresses) {
 		if (roadSegments.size() == 0) {
 			lastRoadSegment = new RoadSegment(location, addresses);
 			roadSegments.add(lastRoadSegment);
