@@ -7,14 +7,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fi.aalto.tripchain.route.Trip.ActivityModel;
+
 import android.location.Location;
 
 public class RouteSegment {
 	final public Activity activity;
 	List<Location> locations;
+	final private long time;
 	
-	public RouteSegment(Activity activity) {
-		this.activity = activity;
+	public RouteSegment(ActivityModel activityModel) {
+		this.activity = activityModel.activity;
+		this.time = activityModel.timestamp;
 		this.locations = new ArrayList<Location>();
 	}
 	
@@ -56,6 +60,7 @@ public class RouteSegment {
 		
 		JSONObject properties = new JSONObject();
 		properties.put("activity", activity.toString());
+		properties.put("time", time);
 		
 		feature.put("geometry", geometry);
 		feature.put("properties", properties);

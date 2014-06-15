@@ -42,7 +42,7 @@ public class Trip {
 		this.clients = clients;
 	}
 
-	private static class ActivityModel {
+	static class ActivityModel {
 		final long timestamp;
 		final Activity activity;
 
@@ -57,9 +57,10 @@ public class Trip {
 			return;
 		}
 
-		this.activities.add(new ActivityModel(activity));
+		ActivityModel am = new ActivityModel(activity);
+		this.activities.add(am);
 
-		route.onActivity(activity);
+		route.onActivity(am);
 	}
 
 	public void onLocation(Location location) {

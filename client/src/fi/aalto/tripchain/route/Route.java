@@ -7,24 +7,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import fi.aalto.tripchain.route.Trip.ActivityModel;
+
 import android.location.Location;
 
 public class Route {
 	private List<RouteSegment> route = new ArrayList<RouteSegment>();
 	private Location lastLocation;
 	
-	public void onActivity(Activity activity) {
+	public void onActivity(ActivityModel am) {
 		if (route.size() == 0) {
-			route.add(new RouteSegment(activity));
+			route.add(new RouteSegment(am));
 			if (lastLocation != null) {
 				onLocation(lastLocation);
 				lastLocation = null;
 			}
 		} else {
 			RouteSegment lastSegment = route.get(route.size() - 1);
-			if (lastSegment.activity != activity) {
+			if (lastSegment.activity != am.activity) {
 				// new segment should begin where old one ends
-				RouteSegment newSegment = new RouteSegment(activity);
+				RouteSegment newSegment = new RouteSegment(am);
 				newSegment.addLocation(lastSegment.getLastLocation());
 				route.add(newSegment);
 			}
